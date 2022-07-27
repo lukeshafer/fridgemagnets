@@ -1,1 +1,45 @@
 <!-- This is the window which contains the game elements -->
+<!-- TODO: 
+      User Interface:
+      - Create piece component
+      - Create piece deck component
+      - Create player hand component
+      - Create player card component
+        - Rotatable pieces????? 🤔
+      - Create opponent card component
+      - Create "I'm done" button
+      - Create "Wait no I'm not!!" button
+
+      Game Logic:
+      - Setup colyseus server
+      - Setup colyseus client
+      - Learn about how colyseus manages game state
+      - Determine flow and steps of game
+      
+      Game entities to track:
+      - Deck
+      - Player's Hand
+      - Opponent's Hands
+        - Must be server side
+        - Actually everything should be server side because people could
+          manipulate the game state on the client side.
+      - Player's Card
+        - Pieces on the card
+        - Piece positions 
+        - Piece rotations
+      - Opponent's Card
+        - Same as player's card
+      - All players' scores
+      - Player statuses
+        - Done
+        - Still playing
+      
+      Thoughts:
+        - Maybe the game shouldn't be very strict about the rules.
+        - Maybe it just lets players have their little cards and then show them to people?
+        - That's how it will start, then more game logic can be added.
+        - Server will still need to manage state for all of the above
+
+
+
+-->
