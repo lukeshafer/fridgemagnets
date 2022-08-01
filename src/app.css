@@ -1,0 +1,21 @@
+/* Write your global styles here, in PostCSS syntax */
+
+:root {
+	/* colors */
+	--piece-color: beige;
+	--player-deck: lightgray;
+	--card-width: min(95vw, 1300px, 70vh);
+
+	/* positioning */
+	--front: 100;
+	--middle: 50;
+	--back: 0;
+
+	font-size: calc(var(--card-width)/30);
+}
+
+body {
+	overflow: hidden;
+	font-family: Arial, Helvetica, sans-serif;
+	background-color: white;
+}
