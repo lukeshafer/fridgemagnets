@@ -4,18 +4,45 @@
 	/* colors */
 	--piece-color: beige;
 	--player-deck: lightgray;
-	--card-width: min(95vw, 1300px, 70vh);
+	--card-width: min(95vw, 1300px, 90vh);
 
 	/* positioning */
 	--front: 100;
 	--middle: 50;
 	--back: 0;
 
-	font-size: calc(var(--card-width)/30);
+	font-size: calc(var(--card-width) / 30);
 }
 
 body {
 	overflow: hidden;
 	font-family: Arial, Helvetica, sans-serif;
 	background-color: white;
+	margin: 0;
+}
+
+.piece {
+	background-color: var(--piece-color);
+	color: black;
+	padding: 0.5rem 0.8rem;
+	width: fit-content;
+	cursor: pointer;
+	z-index: var(--front) !important;
+	font-size: 2rem;
+}
+.piece > p {
+	font-size: 1em;
+	margin: 0;
+}
+
+.btn {
+	width: 50px;
+	height: 50px;
+	padding: 1px;
+	font-size: 30px;
+	border: none;
+	text-align: center;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 }

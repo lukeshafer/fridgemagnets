@@ -1,71 +1,39 @@
 <script lang="ts">
 	import { draggable } from '@neodrag/svelte';
-	import { createEventDispatcher } from 'svelte';
+	import { createEventDispatcher, onMount } from 'svelte';
 	import dragging from './stores/dragging';
 	export let word: string;
 	export let id: number;
-	export let inTray = true;
-	export let x: number = 0;
-	export let y: number = 0;
-	export let clone = false;
-
-	export const resetPiece = () => {
-		x = 0;
-		y = 0;
-		inTray = true;
-		visibility = "visible";
-	};
-
-	export const outOfTray = () => {
-		inTray = false;
-		visibility = "hidden";
-	};
+	export let bounds: HTMLDivElement | undefined = undefined;
 
 	const dispatch = createEventDispatcher();
-	let visibility = 'visible';
 </script>
 
 <div
+	class="piece"
 	use:draggable={{
-		position: { x, y },
 		onDragEnd: (data) => {
-			const bottom = data.domRect.bottom;
-			const top = data.domRect.top;
-			const left = data.domRect.left;
-			const right = data.domRect.right;
 			$dragging = -1;
-			dispatch('dragEnd', { bottom, top, left, right, x, y });
-			if (!clone) visibility = 'visible';
+			dispatch('dragEnd', { bottom: data.domRect.bottom });
 		},
 		onDragStart: (data) => {
 			$dragging = id;
-			dispatch('dragStart', { word, id });
+			dispatch('dragStart');
 		},
 		onDrag: (data) => {
-			const left = data.domRect.left;
-			const top = data.domRect.top;
-			if (!clone) visibility = 'hidden';
-			dispatch('drag', { left, top, id });
-		}
+			dispatch('drag', { bottom: data.domRect.bottom });
+		},
+		bounds
 	}}
-	style:position={inTray && !clone ? 'static' : 'absolute'}
-	style:visibility
 >
+	<span />
 	<p>{word}</p>
 </div>
 
 <style>
-	div {
-		background-color: var(--piece-color);
-		color: black;
-		padding: 7px 10px;
-		width: fit-content;
-		cursor: pointer;
-		z-index: var(--front) !important;
-	}
-
-	p {
-		font-size: 1rem;
-		margin: 0;
+	span {
+		display: block;
+		width: 100%;
+		height: 100%;
 	}
 </style>

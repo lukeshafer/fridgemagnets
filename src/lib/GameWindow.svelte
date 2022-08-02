@@ -1,171 +1,96 @@
-<!-- TODO: 
-      User Interface:
-      ☑️ Create piece component
-      - Create piece deck component
-      ☑️ Create player hand component
-      - Create player card component
-        - Rotatable pieces????? 🤔
-      - Create opponent card component
-      - Create "I'm done" button
-      - Create "Wait no I'm not!!" button
-
-      Game Logic:
-      - Setup colyseus server
-      - Setup colyseus client
-      - Learn about how colyseus manages game state
-      - Determine flow and steps of game
-      
-      Game entities to track:
-      - Deck
-      - Player's Hand
-      - Opponent's Hands
-        - Must be server side
-        - Actually everything should be server side because people could
-          manipulate the game state on the client side.
-      - Player's Card
-        - Pieces on the card
-        - Piece positions 
-        - Piece rotations
-      - Opponent's Card
-        - Same as player's card
-      - All players' scores
-      - Player statuses
-        - Done
-        - Still playing
-      
-      Thoughts:
-        - Maybe the game shouldn't be very strict about the rules.
-        - Maybe it just lets players have their little cards and then show them to people?
-        - That's how it will start, then more game logic can be added.
-        - Server will still need to manage state for all of the above
--->
 <script lang="ts">
 	import { tick } from 'svelte';
 
 	import Piece from './Piece.svelte';
-	import type PieceType from './Piece.svelte';
-	import PlayerDeck from './PlayerDeck.svelte';
+	import type PieceType from './DrawerPiece.svelte';
+	import Drawer from './Drawer.svelte';
 	import PlayerCard from './PlayerCard.svelte';
 	import type PlayerCardType from './PlayerCard.svelte';
-
-	const abcWordList = [
-		'adventure',
-		'balloon',
-		'chocolate',
-		'dinosaur',
-		'elephant',
-		'flamingo',
-		'giraffe',
-		'hippo',
-		'igloo',
-		'jellyfish',
-		'kangaroo',
-		'lion',
-		'monkey',
-		'nurse',
-		'octopus',
-		'penguin',
-		'quail',
-		'rabbit',
-		'snail',
-		'tiger',
-		'unicorn',
-		'vulture',
-		'wasp',
-		'x-ray',
-		'yak',
-		'zebra',
-		'aardvark',
-		'baboon',
-		'camel',
-		'dolphin',
-		'eel',
-		'ferret',
-		'gnu',
-		'gopher',
-		'hippopotamus',
-		'iguana',
-		'jackal',
-		'kitten'
-	];
+	import DrawerPiece from './DrawerPiece.svelte';
+	import { get } from 'svelte/store';
+	import wordList from './data/wordlist.json';
+	import PromptCard from './PromptCard.svelte';
 
 	let playerDeckTop: number;
-	let playerDeckBottom: number;
-	let playerDeckRight: number;
 	let playerCard: PlayerCardType;
 	const piecesInHand: PieceType[] = [];
 	let movedPieces = new Map<number, string>();
-	let movedCoords = new Map<number, number[]>();
+	let movedCoords = new Map<number, { x: number; y: number }>();
 	const moving = { x: 0, y: 0 };
+	let trash_visible = false;
+	let trash_hovering = false;
 
 	const handleDragEnd = async (pieceBottom: number, index: number) => {
-		if (pieceBottom > playerDeckTop) {
+		if (pieceBottom >= playerCard.getBounds().bottom - 10) {
 			await tick();
 			piecesInHand[index].resetPiece();
 			if (movedPieces.delete(index)) {
+				// Re-assigning for svelte reactivity
 				movedPieces = movedPieces;
 				movedCoords.delete(index);
-			}
-		} else {
-			await tick();
-			piecesInHand[index].outOfTray();
-			const cardCoords = playerCard.getBounds();
-			if (moving.x < cardCoords.left) {
-				moving.x = cardCoords.left;
-			}
-			if (moving.y < cardCoords.top) {
-				moving.y = cardCoords.top;
 			}
 		}
 	};
 </script>
 
 <!-- This is the window which contains the game elements -->
-{#each [...movedPieces] as [id, word]}
-	<!-- make it so that Moved Piece has to
-		stick to the card grid just using the features 
-	of neodrag!!! -->
-	<Piece
-		{word}
-		{id}
-		x={movedCoords.get(id)?.at(0)}
-		y={movedCoords.get(id)?.at(1)}
-		clone={true}
-		on:drag={({ detail: { left, top } }) => {
-		}}
-		on:dragEnd={async ({ detail: { bottom, left, top, right } }) => {
-			moving.x = left;
-			moving.y = top;
-			await handleDragEnd(bottom, id);
-			movedCoords = movedCoords.set(id, [moving.x, moving.y]);
-			moving.x = 0;
-			moving.y = 0;
-		}}
-	/>
-{/each}
 
-<PlayerDeck bind:top={playerDeckTop} bind:bottom={playerDeckBottom} bind:right={playerDeckRight}>
-	{#each abcWordList as word, i}
+<PlayerCard bind:this={playerCard}>
+	<div class="trash" class:trash_visible class:trash_hovering>🗑</div>
+	{#each [...movedPieces] as [id, word] (id)}
+		<!--  maybe move piece under mouse cursor on click, then you click and drag it?   -->
 		<Piece
 			{word}
-			id={i}
-			bind:this={piecesInHand[i]}
-			on:dragEnd={({ detail: { bottom } }) => {
-				handleDragEnd(bottom, i);
-			}}
+			{id}
+			bounds={playerCard.getCard()}
 			on:dragStart={() => {
-				movedPieces = movedPieces.set(i, word);
-				movedCoords = movedCoords.set(i, [-1000, -1000]);
+				trash_visible = true;
 			}}
-			on:drag={({ detail: { left, top } }) => {
-				// console.log(`dragStart: ${left}, ${top}, ${id}`);
-				movedCoords = movedCoords.set(i, [left, top]);
+			on:drag={({ detail: { bottom } }) => {
+				if (bottom >= playerCard.getBounds().bottom - 10) trash_hovering = true;
+				else trash_hovering = false;
+			}}
+			on:dragEnd={async ({ detail: { bottom } }) => {
+				await handleDragEnd(bottom, id);
+				trash_visible = false;
+				trash_hovering = false;
 			}}
 		/>
 	{/each}
-</PlayerDeck>
+</PlayerCard>
 
-<PlayerCard bind:this={playerCard}>Hello!</PlayerCard>
+<!-- TODO: add ^ button to expand and close drawer on mobile -->
+<Drawer bind:top={playerDeckTop}>
+	{#each wordList as word, id}
+		<DrawerPiece
+			{word}
+			{id}
+			bind:this={piecesInHand[id]}
+			on:click={({ detail: { startX, startY } }) => {
+				movedCoords.set(id, { x: startX, y: startY });
+				movedPieces = movedPieces.set(id, word);
+			}}
+		/>
+	{/each}
+</Drawer>
+
+<PromptCard prompt="egg?"/>
 
 <style>
+	.trash {
+		width: 100%;
+		text-align: center;
+		background: #ff000033;
+		position: absolute;
+		bottom: 0;
+		visibility: hidden;
+	}
+
+	.trash_visible {
+		visibility: visible;
+	}
+
+	.trash_hovering {
+		background: #ff0000;
+	}
 </style>

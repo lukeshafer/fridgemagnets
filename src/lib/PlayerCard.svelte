@@ -1,5 +1,5 @@
 <script lang="ts">
-  let card: HTMLDivElement;
+	let card: HTMLDivElement;
 	/*$: bounds = {
 		right = card?.getBoundingClientRect().right;
 		left = card?.getBoundingClientRect().left;
@@ -16,14 +16,18 @@
 		left = card.getBoundingClientRect().left;
 		top = card.getBoundingClientRect().top;
 		bottom = card.getBoundingClientRect().bottom;
-	}	
+	}
 
 	export const getBounds = () => {
 		return {
-			right, left, top, bottom,
-			}
+			right,
+			left,
+			top,
+			bottom
+		};
 	};
 
+	export const getCard = () => card;
 </script>
 
 <!-- The Player Card -->
@@ -33,7 +37,7 @@
 <!-- Best way: left-right, top-bottom -->
 
 <div bind:this={card}>
-	<!-- -->
+	<slot />
 </div>
 
 <style>

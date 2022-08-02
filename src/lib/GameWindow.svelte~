@@ -122,6 +122,9 @@
 
 <!-- This is the window which contains the game elements -->
 {#each [...movedPieces] as [id, word]}
+	<!-- make it so that Moved Piece has to
+		stick to the card grid just using the features 
+	of neodrag!!! -->
 	<Piece
 		{word}
 		{id}
