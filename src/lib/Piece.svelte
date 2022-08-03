@@ -3,9 +3,13 @@
 	import { createEventDispatcher, onMount } from 'svelte';
 	export let word: string;
 	export let id: number;
-	export let bounds: HTMLDivElement | undefined = undefined;
+	export let bounds: HTMLDivElement;
 
-	const dispatch = createEventDispatcher();
+	// const dispatch = createEventDispatcher();
+	const dispatchDrag = createEventDispatcher<{ drag: { rect: DOMRect } }>();
+	const dispatchDragStart = createEventDispatcher<{ dragStart: null }>();
+	const dispatchDragEnd = createEventDispatcher<{ dragEnd: { rect: DOMRect } }>();
+
 	let position = 'absolute' as 'static' | 'absolute';
 </script>
 
@@ -14,14 +18,14 @@
 	class="piece"
 	use:draggable={{
 		onDragEnd: (data) => {
-			dispatch('dragEnd', { bottom: data.domRect.bottom });
+			dispatchDragEnd('dragEnd', { rect: data.domRect });
 			position = 'absolute';
 		},
-		onDragStart: (data) => {
-			dispatch('dragStart');
+		onDragStart: () => {
+			dispatchDragStart('dragStart');
 		},
 		onDrag: (data) => {
-			dispatch('drag', { bottom: data.domRect.bottom });
+			dispatchDrag('drag', { rect: data.domRect });
 		},
 		bounds
 	}}

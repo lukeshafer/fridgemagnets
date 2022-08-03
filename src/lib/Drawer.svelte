@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { afterUpdate, tick } from 'svelte';
+	import { draggable } from '@neodrag/svelte';
 
 	let deck: HTMLDivElement;
 	export let right = 0;
@@ -23,6 +24,17 @@
 </script>
 
 <svelte:window on:resize={getNewBounds} />
+
+<!-- 
+		use:draggable={{
+			axis: 'y',
+			onDragEnd: () => {
+				toggleDrawer();
+				// reset button
+			}
+		}}
+
+ -->
 
 <div class="wrapper" class:open>
 	<button class="btn" on:click={toggleDrawer}><span>▲</span></button>

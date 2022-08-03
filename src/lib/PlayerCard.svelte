@@ -1,25 +1,25 @@
 <script lang="ts">
-	import { readable, type Subscriber, type Readable } from 'svelte/store';
+	import Piece from './Piece.svelte';
+	import { movedPieces, piecesInHand } from './stores';
 
 	let card: HTMLDivElement;
+	let trash: HTMLDivElement;
+	export const getCard = () => card;
+	$: trashBounds = trash?.getBoundingClientRect();
 
-	interface ElementBounds {
-		right: number;
-		left: number;
-		top: number;
-		bottom: number;
-	}
+	let trash_visible = false;
+	let trash_hovering = false;
 
-	export const getBounds = (): ElementBounds => {
-		return {
-			right: card.getBoundingClientRect().right,
-			left: card.getBoundingClientRect().left,
-			top: card.getBoundingClientRect().top,
-			bottom: card.getBoundingClientRect().bottom
-		};
+	const isOverlapping = (a: DOMRect, b: DOMRect) => {
+		return !(a.top > b.bottom || a.right < b.left || a.bottom < b.top || a.left > b.right);
 	};
 
-	export const getCard = () => card;
+	const handleDragEnd = async (pieceRect: DOMRect, index: number) => {
+		if (isOverlapping(pieceRect, trashBounds)) {
+			piecesInHand[index].resetPiece();
+			$movedPieces.delete(index);
+		}
+	};
 </script>
 
 <!-- The Player Card -->
@@ -30,32 +30,68 @@
 
 <div class="border">
 	<div class="card" bind:this={card}>
-		<slot />
+		<!-- Trash Can for deleting pieces -->
+		<div class="trash" class:trash_visible class:trash_hovering bind:this={trash}>🗑</div>
+		<!-- List of pieces on the card -->
+		{#each [...$movedPieces] as [id, word] (id)}
+			<Piece
+				{word}
+				{id}
+				bounds={card}
+				on:dragStart={() => {
+					trash_visible = true;
+				}}
+				on:drag={({ detail: { rect: pieceRect } }) => {
+					trash_hovering = isOverlapping(pieceRect, trashBounds);
+				}}
+				on:dragEnd={async ({ detail: { rect: pieceRect } }) => {
+					await handleDragEnd(pieceRect, id);
+					trash_visible = false;
+					trash_hovering = false;
+				}}
+			/>
+		{/each}
 	</div>
 </div>
 
 <style>
 	.border {
+		font-size: calc(var(--card-width) / 100);
 		background: #111;
-		background: linear-gradient(to right bottom, #222 0 48%, #111 50% 100%);
-		width: var(--card-width);
-		height: calc(var(--card-width) * 0.65);
-		padding: calc(var(--card-width) / 100);
+		background: linear-gradient(to right bottom, #333 0 48%, #111 50% 100%);
+		width: 100em;
+		height: 65em;
+		padding: 1em;
 
-		border-radius: calc(var(--card-width) / 20);
-		/*		border-width: 5px;
-		border-style: solid;
-		border-top-color: linear-gradient(black, white);
-		border-left-color: #222;*/
+		border-radius: 5em;
 	}
 
 	.card {
-		background: #181818;
+		background: #222;
 		position: relative;
-		width: 100%;
+		width: calc(100%);
 		height: 100%;
-		border-radius: calc(var(--card-width) / 25);
-		/* bottom: 30%; */
-		/* left: calc(50% - var(--card-width) / 2); */
+		box-sizing: border-box;
+		border-radius: 4em;
+		padding: 2em;
+	}
+
+	.trash {
+		font-size: 5em;
+		padding: 0.2em;
+		text-align: center;
+		background: #ff000033;
+		position: absolute;
+		top: 0;
+		right: 0;
+		visibility: hidden;
+	}
+
+	.trash_visible {
+		visibility: visible;
+	}
+
+	.trash_hovering {
+		background: #ff0000;
 	}
 </style>
