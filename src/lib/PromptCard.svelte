@@ -19,8 +19,8 @@
 		justify-content: center;
 		text-align: center;
 
-		width: 15rem;
-		height: 8rem;
-		font-size: 1.2rem;
+		width: 21rem;
+		height: 12rem;
+		font-size: 1.6rem;
 	}
 </style>

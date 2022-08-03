@@ -85,6 +85,7 @@
 		align-items: center;
 		justify-content: center;
 		gap: 10px;
+		height: 80vh;
 	}
 	.trash {
 		width: 100%;

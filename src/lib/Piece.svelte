@@ -6,13 +6,16 @@
 	export let bounds: HTMLDivElement | undefined = undefined;
 
 	const dispatch = createEventDispatcher();
+	let position = 'absolute' as 'static' | 'absolute';
 </script>
 
 <div
+	style:position
 	class="piece"
 	use:draggable={{
 		onDragEnd: (data) => {
 			dispatch('dragEnd', { bottom: data.domRect.bottom });
+			position = 'absolute';
 		},
 		onDragStart: (data) => {
 			dispatch('dragStart');
