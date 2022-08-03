@@ -1,4 +1,4 @@
-<script lang='ts'>
+<script lang="ts">
 	export let prompt: string;
 </script>
 
@@ -12,7 +12,7 @@
 		background-color: beige;
 		border-radius: 0.5rem;
 		box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.1);
-		margin: auto;
+		/* margin: auto; */
 
 		display: flex;
 		align-items: center;

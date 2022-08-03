@@ -2,8 +2,8 @@
 
 :root {
 	/* colors */
-	--piece-color: beige;
-	--player-deck: lightgray;
+	--piece-color: #efefef;
+	--player-deck: #754a21;
 	--card-width: min(95vw, 1300px, 90vh);
 
 	/* positioning */
@@ -16,8 +16,8 @@
 
 body {
 	overflow: hidden;
-	font-family: Arial, Helvetica, sans-serif;
-	background-color: white;
+	font-family: 'Special Elite', 'Courier New', monospace;
+	background-color: #cc8044;
 	margin: 0;
 }
 
@@ -29,6 +29,7 @@ body {
 	cursor: pointer;
 	z-index: var(--front) !important;
 	font-size: 2rem;
+	box-shadow: 2px 2px black, -1px -1px black;
 }
 .piece > p {
 	font-size: 1em;

@@ -7,9 +7,10 @@
 	import PlayerCard from './PlayerCard.svelte';
 	import type PlayerCardType from './PlayerCard.svelte';
 	import DrawerPiece from './DrawerPiece.svelte';
-	import { get } from 'svelte/store';
 	import wordList from './data/wordlist.json';
 	import PromptCard from './PromptCard.svelte';
+	import DoneButton from './DoneButton.svelte';
+	import { isPlayerDone } from './stores';
 
 	let playerDeckTop: number;
 	let playerCard: PlayerCardType;
@@ -34,32 +35,35 @@
 </script>
 
 <!-- This is the window which contains the game elements -->
+<div class="game-wrapper">
+	<PromptCard prompt="egg?" />
 
-<PlayerCard bind:this={playerCard}>
-	<div class="trash" class:trash_visible class:trash_hovering>🗑</div>
-	{#each [...movedPieces] as [id, word] (id)}
-		<!--  maybe move piece under mouse cursor on click, then you click and drag it?   -->
-		<Piece
-			{word}
-			{id}
-			bounds={playerCard.getCard()}
-			on:dragStart={() => {
-				trash_visible = true;
-			}}
-			on:drag={({ detail: { bottom } }) => {
-				if (bottom >= playerCard.getBounds().bottom - 10) trash_hovering = true;
-				else trash_hovering = false;
-			}}
-			on:dragEnd={async ({ detail: { bottom } }) => {
-				await handleDragEnd(bottom, id);
-				trash_visible = false;
-				trash_hovering = false;
-			}}
-		/>
-	{/each}
-</PlayerCard>
+	<PlayerCard bind:this={playerCard}>
+		<div class="trash" class:trash_visible class:trash_hovering>🗑</div>
+		<!-- TODO: refactor the trash into the Card itself, and move logic for it out of this -->
+		{#each [...movedPieces] as [id, word] (id)}
+			<Piece
+				{word}
+				{id}
+				bounds={playerCard.getCard()}
+				on:dragStart={() => {
+					trash_visible = true;
+				}}
+				on:drag={({ detail: { bottom } }) => {
+					if (bottom >= playerCard.getBounds().bottom - 10) trash_hovering = true;
+					else trash_hovering = false;
+				}}
+				on:dragEnd={async ({ detail: { bottom } }) => {
+					await handleDragEnd(bottom, id);
+					trash_visible = false;
+					trash_hovering = false;
+				}}
+			/>
+		{/each}
+	</PlayerCard>
+	<DoneButton />
+</div>
 
-<!-- TODO: add ^ button to expand and close drawer on mobile -->
 <Drawer bind:top={playerDeckTop}>
 	{#each wordList as word, id}
 		<DrawerPiece
@@ -74,9 +78,14 @@
 	{/each}
 </Drawer>
 
-<PromptCard prompt="egg?"/>
-
 <style>
+	.game-wrapper {
+		display: flex;
+		flex-flow: row-reverse wrap;
+		align-items: center;
+		justify-content: center;
+		gap: 10px;
+	}
 	.trash {
 		width: 100%;
 		text-align: center;
@@ -92,5 +101,11 @@
 
 	.trash_hovering {
 		background: #ff0000;
+	}
+
+	@media screen and (min-aspect-ratio: 3/2) {
+		.game-wrapper {
+			/* flex-direction: row; */
+		}
 	}
 </style>

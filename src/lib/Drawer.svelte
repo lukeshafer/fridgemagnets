@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { afterUpdate, tick } from 'svelte';
-	import dragging from './stores/dragging';
 
 	let deck: HTMLDivElement;
 	export let right = 0;
@@ -38,6 +37,7 @@
 		bottom: 0;
 		width: 100%;
 		height: 50vh;
+		transform: translate3d(0, calc(50vh - 50px), 0);
 
 		display: flex;
 		flex-direction: column;
@@ -68,14 +68,10 @@
 	}
 
 	.open {
-		transform: translate3d(0, calc(50vh - 50px), 0);
-	}
-
-	button span {
-		transform: rotate(180deg);
+		transform: translate3d(0, 0, 0);
 	}
 
 	.open span {
-		transform: rotate(0deg);
+		transform: rotate(180deg);
 	}
 </style>
