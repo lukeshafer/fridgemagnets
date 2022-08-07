@@ -1,6 +1,6 @@
 <script lang="ts">
-	import Piece from './Piece.svelte';
-	import { movedPieces, piecesInHand } from './stores';
+	import Piece from '$lib/game-components/Piece.svelte';
+	import { movedPieces, piecesInHand, player } from '$lib/stores';
 
 	let card: HTMLDivElement;
 	let trash: HTMLDivElement;
@@ -9,6 +9,8 @@
 
 	let trash_visible = false;
 	let trash_hovering = false;
+
+	$: disabled = $player.status === 'finished';
 
 	const isOverlapping = (a: DOMRect, b: DOMRect) => {
 		return !(a.top > b.bottom || a.right < b.left || a.bottom < b.top || a.left > b.right);
@@ -37,6 +39,7 @@
 			<Piece
 				{word}
 				{id}
+				{disabled}
 				bounds={card}
 				on:dragStart={() => {
 					trash_visible = true;
@@ -52,6 +55,9 @@
 			/>
 		{/each}
 	</div>
+	{#if $player.status === 'finished'}
+		<div class="disabled-overlay" />
+	{/if}
 </div>
 
 <style>
@@ -62,6 +68,7 @@
 		width: 100em;
 		height: 65em;
 		padding: 1em;
+		position: relative;
 
 		border-radius: 5em;
 	}
@@ -93,5 +100,15 @@
 
 	.trash_hovering {
 		background: #ff0000;
+	}
+
+	.disabled-overlay {
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		background: #000;
+		opacity: 0.5;
 	}
 </style>

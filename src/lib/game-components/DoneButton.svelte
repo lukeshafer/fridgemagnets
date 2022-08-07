@@ -1,7 +1,9 @@
 <script lang="ts">
-	import { isPlayerDone } from './stores';
+	import { room } from '$lib/stores';
 	const handleClick = () => {
-		$isPlayerDone = true;
+		$room.send('updatePlayer', {
+			status: 'finished'
+		});
 	};
 </script>
 

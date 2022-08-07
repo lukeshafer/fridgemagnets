@@ -4,6 +4,7 @@
 	export let word: string;
 	export let id: number;
 	export let bounds: HTMLDivElement;
+	export let disabled = false;
 
 	// const dispatch = createEventDispatcher();
 	const dispatchDrag = createEventDispatcher<{ drag: { rect: DOMRect } }>();
@@ -17,6 +18,7 @@
 	style:position
 	class="piece"
 	use:draggable={{
+		disabled,
 		onDragEnd: (data) => {
 			dispatchDragEnd('dragEnd', { rect: data.domRect });
 			position = 'absolute';

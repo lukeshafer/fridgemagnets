@@ -69,7 +69,7 @@
 		/* left: 0; */
 		/* right: 0; */
 		background: var(--player-deck);
-		z-index: var(--middle);
+		/* z-index: var(--middle); */
 
 		display: flex;
 		flex-flow: column wrap;
