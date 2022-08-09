@@ -3,20 +3,24 @@ import words from '../../data/words.json';
 import prompts from '../../data/prompts.json';
 
 export class Piece extends Schema {
+	constructor(word: string, id: number, x: number = 0, y: number = 0) {
+		super();
+		this.word = word;
+		this.id = id;
+		this.x = x;
+		this.y = y;
+	}
 	@type('string') word: string;
 	@type('number') id: number;
-	// maybe ID should be a string
-	@type({ map: 'number' }) position = new MapSchema<number>();
+	@type('number') x: number;
+	@type('number') y: number;
 }
 
-export class Deck extends Schema {
-	@type({ array: Piece }) deck = new ArraySchema<Piece>();
+class Deck {
+	deck: Piece[] = [];
 	constructor() {
-		super();
 		words.forEach((word, index) => {
-			const piece = new Piece();
-			piece.word = word;
-			piece.id = index;
+			const piece = new Piece(word, index);
 			this.deck.push(piece);
 		});
 		this.shuffle();
@@ -28,7 +32,6 @@ export class Deck extends Schema {
 		}
 	}
 	deal() {
-		console.log('Dealing a card...');
 		return this.deck.shift();
 	}
 }
@@ -38,7 +41,7 @@ export class PromptCard extends Schema {
 	@type('number') id: number;
 }
 
-export class PromptDeck extends Schema {
+class PromptDeck extends Schema {
 	@type({ array: PromptCard }) deck = new ArraySchema<PromptCard>();
 	constructor() {
 		super();
@@ -57,28 +60,32 @@ export class PromptDeck extends Schema {
 		}
 	}
 	draw() {
-		console.log('Dealing a prompt...');
 		return this.deck.shift();
 	}
 }
 
-export class PlayerCard extends Schema {
-	@type({ array: Piece }) answer = new ArraySchema<Piece>();
+const PLAYER_STATUS = ['editing', 'waiting', 'finished'] as const;
+type PlayerStatus = typeof PLAYER_STATUS[number];
+export function isPlayerStatus(input: string): input is PlayerStatus {
+	return PLAYER_STATUS.includes(input as PlayerStatus);
 }
 
 export class Player extends Schema {
 	@type('string') name: string;
 	@type({ array: Piece }) hand = new ArraySchema<Piece>();
 	@type('boolean') isVIP: boolean = false;
-	@type('string') status: 'waiting' | 'editing' | 'finished' = 'waiting';
+	@type('string') status: PlayerStatus = 'waiting';
+	@type({ array: Piece }) submission = new ArraySchema<Piece>();
 }
 
 export class MyRoomState extends Schema {
 	@type('string') roomId: string;
-	@type('string') gamePhase: 'lobby' | 'playing' = 'lobby';
+	@type('string') gamePhase: 'lobby' | 'playing' | 'showcase' | 'resetting' =
+		'lobby';
 	@type('number') turn: number;
 	@type({ map: Player }) players = new MapSchema<Player>();
 	PromptDeck = new PromptDeck();
 	deck = new Deck();
 	@type(PromptCard) currentPrompt: PromptCard;
+	@type('string') showcaseID: string;
 }
