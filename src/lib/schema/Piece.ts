@@ -11,5 +11,6 @@ import { Schema, type, ArraySchema, MapSchema, SetSchema, DataChange } from '@co
 export class Piece extends Schema {
     @type("string") public word!: string;
     @type("number") public id!: number;
-    @type({ map: "number" }) public position: MapSchema<number> = new MapSchema<number>();
+    @type("number") public x!: number;
+    @type("number") public y!: number;
 }

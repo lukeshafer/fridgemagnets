@@ -83,7 +83,7 @@
 		transform: translate3d(0, 0, 0);
 	}
 
-	.open span {
+	.open .btn span {
 		transform: rotate(180deg);
 	}
 </style>

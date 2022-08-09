@@ -13,4 +13,5 @@ export class Player extends Schema {
     @type([ Piece ]) public hand: ArraySchema<Piece> = new ArraySchema<Piece>();
     @type("boolean") public isVIP!: boolean;
     @type("string") public status!: string;
+    @type([ Piece ]) public submission: ArraySchema<Piece> = new ArraySchema<Piece>();
 }

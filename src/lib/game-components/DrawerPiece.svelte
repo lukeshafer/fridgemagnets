@@ -1,8 +1,9 @@
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte';
 
-	export let word: string;
+	// svelte-ignore unused-export-let
 	export let id: number;
+	export let word: string;
 	const dispatch = createEventDispatcher();
 	let display = 'block';
 	let visibility = 'visible';

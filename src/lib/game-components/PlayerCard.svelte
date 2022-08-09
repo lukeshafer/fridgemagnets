@@ -1,10 +1,8 @@
 <script lang="ts">
 	import Piece from '$lib/game-components/Piece.svelte';
-	import { movedPieces, piecesInHand, player } from '$lib/stores';
+	import { playedPieces, piecesInHand, player, card } from '$lib/stores';
 
-	let card: HTMLDivElement;
 	let trash: HTMLDivElement;
-	export const getCard = () => card;
 	$: trashBounds = trash?.getBoundingClientRect();
 
 	let trash_visible = false;
@@ -13,14 +11,38 @@
 	$: disabled = $player.status === 'finished';
 
 	const isOverlapping = (a: DOMRect, b: DOMRect) => {
+		if (!(a.top > b.bottom || a.right < b.left || a.bottom < b.top || a.left > b.right)) {
+			// console log which sides are overlapping
+			const overlappingPortions = {
+				top: a.top < b.top ? a.bottom - b.top : 0,
+				right: a.right > b.right ? b.right - a.left : 0,
+				bottom: a.bottom > b.bottom ? b.bottom - a.top : 0,
+				left: a.left < b.left ? a.right - b.left : 0
+			};
+		}
+
 		return !(a.top > b.bottom || a.right < b.left || a.bottom < b.top || a.left > b.right);
 	};
 
-	const handleDragEnd = async (pieceRect: DOMRect, index: number) => {
+	const handleDragEnd = async (pieceRect: DOMRect, index: number, word: string) => {
 		if (isOverlapping(pieceRect, trashBounds)) {
 			piecesInHand[index].resetPiece();
-			$movedPieces.delete(index);
+			$playedPieces.delete(index);
+		} else {
+			handlePieceOverlap(pieceRect, index, word);
 		}
+	};
+
+	const handlePieceOverlap = (pieceRect: DOMRect, index: number, word: string) => {
+		$playedPieces.forEach(({ position }, key) => {
+			if (key !== index && position && isOverlapping(pieceRect, position)) {
+				// move piece out of the way
+			}
+		});
+		$playedPieces.set(index, {
+			word,
+			position: pieceRect
+		});
 	};
 </script>
 
@@ -31,60 +53,62 @@
 <!-- Best way: left-right, top-bottom -->
 
 <div class="border">
-	<div class="card" bind:this={card}>
-		<!-- Trash Can for deleting pieces -->
-		<div class="trash" class:trash_visible class:trash_hovering bind:this={trash}>🗑</div>
-		<!-- List of pieces on the card -->
-		{#each [...$movedPieces] as [id, word] (id)}
-			<Piece
-				{word}
-				{id}
-				{disabled}
-				bounds={card}
-				on:dragStart={() => {
-					trash_visible = true;
-				}}
-				on:drag={({ detail: { rect: pieceRect } }) => {
-					trash_hovering = isOverlapping(pieceRect, trashBounds);
-				}}
-				on:dragEnd={async ({ detail: { rect: pieceRect } }) => {
-					await handleDragEnd(pieceRect, id);
-					trash_visible = false;
-					trash_hovering = false;
-				}}
-			/>
-		{/each}
+	<div class="card">
+		<div class="bounds" bind:this={$card} style="height: 100%;">
+			<!-- Trash Can for deleting pieces -->
+			<div class="trash" class:trash_visible class:trash_hovering bind:this={trash}>🗑</div>
+			<!-- List of pieces on the card -->
+			{#each [...$playedPieces] as [id, { word }] (id)}
+				<Piece
+					{word}
+					{id}
+					{disabled}
+					on:dragStart={() => {
+						trash_visible = true;
+					}}
+					on:drag={({ detail: { rect: pieceRect } }) => {
+						trash_hovering = isOverlapping(pieceRect, trashBounds);
+					}}
+					on:dragEnd={async ({ detail: { rect: pieceRect } }) => {
+						await handleDragEnd(pieceRect, id, word);
+						const cardRect = $card.getBoundingClientRect();
+						let x = (pieceRect.x - cardRect.x) / cardRect.width;
+						trash_visible = false;
+						trash_hovering = false;
+					}}
+				/>
+			{/each}
+		</div>
 	</div>
 	{#if $player.status === 'finished'}
-		<div class="disabled-overlay" />
+		<div class="border disabled-overlay" />
 	{/if}
 </div>
 
 <style>
 	.border {
-		font-size: calc(var(--card-width) / 100);
 		background: #111;
 		background: linear-gradient(to right bottom, #333 0 48%, #111 50% 100%);
-		width: 100em;
-		height: 65em;
-		padding: 1em;
+		width: 25em;
+		height: 15em;
+		padding: 0.3em;
 		position: relative;
-
-		border-radius: 5em;
+		border-radius: 2em;
+		font-size: var(--basis);
 	}
 
 	.card {
 		background: #222;
 		position: relative;
-		width: calc(100%);
+		width: 100%;
 		height: 100%;
 		box-sizing: border-box;
-		border-radius: 4em;
-		padding: 2em;
+		border-radius: 1.6em;
+		padding: 0.6em;
 	}
 
 	.trash {
-		font-size: 5em;
+		height: 1.5em;
 		padding: 0.2em;
 		text-align: center;
 		background: #ff000033;
@@ -102,12 +126,11 @@
 		background: #ff0000;
 	}
 
-	.disabled-overlay {
+	.border.disabled-overlay {
 		position: absolute;
+		z-index: var(--front);
 		top: 0;
 		left: 0;
-		width: 100%;
-		height: 100%;
 		background: #000;
 		opacity: 0.5;
 	}

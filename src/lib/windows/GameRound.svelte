@@ -5,9 +5,17 @@
 	import PromptCard from '$lib/game-components/PromptCard.svelte';
 	import DoneButton from '$lib/game-components/DoneButton.svelte';
 	import EditButton from '$lib/game-components/EditButton.svelte';
-	import { movedPieces, piecesInHand, player, room } from '$lib/stores';
+	import { playedPieces, piecesInHand, player, room } from '$lib/stores';
 
 	$: currentPrompt = $room.state.currentPrompt.prompt;
+	let hand = $player.hand;
+
+	$room.onStateChange((state) => {
+		hand = $player.hand;
+		hand.forEach((piece) => {
+			// console.log(piece.word);
+		});
+	});
 </script>
 
 <!-- This is the window which contains the game elements -->
@@ -25,13 +33,13 @@
 </div>
 
 <Drawer>
-	{#each $player.hand as { word }, id}
+	{#each hand as { word, id }}
 		<DrawerPiece
 			{word}
 			{id}
 			bind:this={piecesInHand[id]}
 			on:click={() => {
-				$movedPieces = $movedPieces.set(id, word);
+				$playedPieces = $playedPieces.set(id, { word, position: undefined });
 			}}
 		/>
 	{/each}

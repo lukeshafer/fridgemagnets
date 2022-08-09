@@ -4,21 +4,35 @@
 	/* colors */
 	--piece-color: #efefef;
 	--player-deck: #754a21;
-	--card-width: min(95vw, 1300px, 90vh);
+	--card-background: beige;
+	--card-width: min(85vw, 1300px, 60vh);
+	--basis: min(3.7vw, 30px, 3vh);
 
 	/* positioning */
 	--front: 100;
 	--middle: 50;
 	--back: 0;
 
-	font-size: calc(var(--card-width) / 30);
+	font-size: 100%;
 }
 
 body {
 	overflow: hidden;
 	font-family: 'Special Elite', 'Courier New', monospace;
-	background-color: #cc8044;
-	margin: 0;
+	background-color: #2d7376;
+	margin: 1rem;
+}
+
+h1 {
+	font-size: 4rem;
+	margin: 2rem;
+	max-width: 20rem;
+	letter-spacing: 0.1em;
+}
+
+input {
+	font-family: inherit;
+	width: min-content;
 }
 
 .piece {
@@ -26,9 +40,8 @@ body {
 	color: black;
 	padding: 0.5rem 0.8rem;
 	width: fit-content;
-	cursor: pointer;
 	z-index: var(--front) !important;
-	font-size: 2rem;
+	font-size: 1.8em;
 	box-shadow: 2px 2px black, -1px -1px black;
 }
 .piece > p {
@@ -37,11 +50,14 @@ body {
 }
 
 .btn {
-	height: 50px;
-	padding: 1px 10px;
-	font-size: 30px;
+	height: 3rem;
+	padding: 0.5rem;
+	font-size: 1.5rem;
 	border: none;
 	text-align: center;
 	color: black;
 	font-family: inherit;
+	background-color: var(--card-background);
+	cursor: pointer;
+	box-shadow: 0.1rem 0.1rem 0 #00000066;
 }

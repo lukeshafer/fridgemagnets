@@ -15,4 +15,5 @@ export class MyRoomState extends Schema {
     @type("number") public turn!: number;
     @type({ map: Player }) public players: MapSchema<Player> = new MapSchema<Player>();
     @type(PromptCard) public currentPrompt: PromptCard = new PromptCard();
+    @type("string") public showcaseID!: string;
 }

@@ -1,17 +1,21 @@
 <script lang="ts">
 	import { draggable } from '@neodrag/svelte';
-	import { createEventDispatcher, onMount } from 'svelte';
-	export let word: string;
+	import { createEventDispatcher, onMount, tick } from 'svelte';
+	import { card } from '$lib/stores';
+
+	// svelte-ignore unused-export-let
 	export let id: number;
-	export let bounds: HTMLDivElement;
+	export let word: string;
 	export let disabled = false;
 
 	// const dispatch = createEventDispatcher();
 	const dispatchDrag = createEventDispatcher<{ drag: { rect: DOMRect } }>();
 	const dispatchDragStart = createEventDispatcher<{ dragStart: null }>();
-	const dispatchDragEnd = createEventDispatcher<{ dragEnd: { rect: DOMRect } }>();
+	const dispatchDragEnd = createEventDispatcher<{
+		dragEnd: { rect: DOMRect };
+	}>();
 
-	let position = 'absolute' as 'static' | 'absolute';
+	let position = 'static' as 'static' | 'absolute';
 </script>
 
 <div
@@ -29,17 +33,15 @@
 		onDrag: (data) => {
 			dispatchDrag('drag', { rect: data.domRect });
 		},
-		bounds
+		bounds: $card
 	}}
 >
-	<span />
 	<p>{word}</p>
 </div>
 
 <style>
-	span {
-		display: block;
-		width: 100%;
-		height: 100%;
+	div {
+		user-select: none;
+		display: inline-block;
 	}
 </style>

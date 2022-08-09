@@ -1,75 +1,67 @@
 <script lang="ts">
 	import { client, room, player } from '$lib/stores';
+	import { onMount } from 'svelte';
 
 	const options = {
 		name: '',
 		roomcode: ''
 	};
 
-	// const joinRoom = async () => {
-	// 	console.log('Joining room...');
-	// 	try {
-	// 		$room = await $client.join('my_room', options);
-	// 		console.log($room.sessionId, 'joined', $room.name);
-	// 		console.log($room);
-	// 	} catch (err) {
-	// 		console.log('JOIN ERROR', err);
-	// 	}
-	// };
+	let btn: HTMLButtonElement;
+
+	onMount(() => {
+		btn.disabled = false;
+	});
 
 	const createRoom = async () => {
 		console.log('Creating room...');
+		btn.disabled = true;
 		try {
+			// debugger;
 			$room = await $client.joinOrCreate('lobby', options);
-			// console.log($room.sessionId, 'joined', $room.name);
+			console.log($room.sessionId, 'joined', $room.name);
 		} catch (err) {
 			console.log('CREATE ERROR', err);
 		}
 	};
 </script>
 
-<h1>Ransom Notes Online</h1>
-
 <div class="page-wrapper">
-	<div class="form-wrapper">
-		<h2>Join Game</h2>
+	<h1 class="title">Ransom Notes Online</h1>
+	<div class="form-wrapper" style:visibility={$client ? 'visible' : 'hidden'}>
 		<form on:submit|preventDefault={createRoom}>
 			<label for="name">Your name</label>
-			<input type="text" name="Name" id="name" bind:value={options.name} required />
-			<button type="submit">Join</button>
+			<input type="text" class="piece" name="Name" id="name" bind:value={options.name} required />
+			<button type="submit" class="btn" bind:this={btn}>Join</button>
 		</form>
 	</div>
-
-	<!-- <div class="form-wrapper">
-		<h2>Join Existing Room</h2>
-		<form on:submit|preventDefault={joinRoom}>
-			<label for="name">Your name</label>
-			<input type="text" name="Name" id="name" bind:value={options.name} required />
-			<label for="roomcode">Room Code</label>
-			<input type="text" name="Room Code" id="roomcode" bind:value={options.roomcode} required />
-			<button type="submit">Join Room</button>
-		</form>
-	</div> -->
 </div>
 
 <style>
 	.page-wrapper {
 		display: flex;
 		flex-direction: row;
-		justify-content: space-around;
+		flex-wrap: wrap;
+		justify-content: center;
 	}
 
 	.form-wrapper {
+		font-size: 1.5rem;
 		margin: 10px;
 		display: flex;
 		flex-direction: column;
 		align-items: center;
+		justify-content: center;
 		text-align: left;
 	}
 
 	form {
 		display: flex;
 		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		text-align: left;
+		gap: 0.5rem;
 	}
 
 	label {
