@@ -24,22 +24,22 @@
 		return !(a.top > b.bottom || a.right < b.left || a.bottom < b.top || a.left > b.right);
 	};
 
-	const handleDragEnd = async (pieceRect: DOMRect, index: number, word: string) => {
+	const handleDragEnd = async (pieceRect: DOMRect, id: number, word: string) => {
 		if (isOverlapping(pieceRect, trashBounds)) {
-			piecesInHand[index].resetPiece();
-			$playedPieces.delete(index);
+			piecesInHand[id].resetPiece();
+			$playedPieces.delete(id);
 		} else {
-			handlePieceOverlap(pieceRect, index, word);
+			handlePieceOverlap(pieceRect, id, word);
 		}
 	};
 
-	const handlePieceOverlap = (pieceRect: DOMRect, index: number, word: string) => {
+	const handlePieceOverlap = (pieceRect: DOMRect, id: number, word: string) => {
 		$playedPieces.forEach(({ position }, key) => {
-			if (key !== index && position && isOverlapping(pieceRect, position)) {
+			if (key !== id && position && isOverlapping(pieceRect, position)) {
 				// move piece out of the way
 			}
 		});
-		$playedPieces.set(index, {
+		$playedPieces.set(id, {
 			word,
 			position: pieceRect
 		});
@@ -59,10 +59,18 @@
 			<div class="trash" class:trash_visible class:trash_hovering bind:this={trash}>🗑</div>
 			<!-- List of pieces on the card -->
 			{#each [...$playedPieces] as [id, { word }] (id)}
+				{@const width = $card.getBoundingClientRect().width}
+				{@const height = $card.getBoundingClientRect().height}
+				{@const maxX = width * (1 - (word.length + 1) * 0.05) }
+				{@const maxY = height * 0.85 }
+				{@const x = Math.floor(Math.random() * maxX)}
+				{@const y = Math.floor(Math.random() * maxY)}
 				<Piece
 					{word}
 					{id}
 					{disabled}
+					{x}
+					{y}
 					on:dragStart={() => {
 						trash_visible = true;
 					}}
@@ -71,18 +79,16 @@
 					}}
 					on:dragEnd={async ({ detail: { rect: pieceRect } }) => {
 						await handleDragEnd(pieceRect, id, word);
-						const cardRect = $card.getBoundingClientRect();
-						let x = (pieceRect.x - cardRect.x) / cardRect.width;
 						trash_visible = false;
 						trash_hovering = false;
 					}}
 				/>
 			{/each}
+			{#if $player.status === 'finished'}
+				<div class="disabled-overlay" />
+			{/if}
 		</div>
 	</div>
-	{#if $player.status === 'finished'}
-		<div class="border disabled-overlay" />
-	{/if}
 </div>
 
 <style>
@@ -107,7 +113,12 @@
 		padding: 0.6em;
 	}
 
+	.bounds {
+		position: relative;
+	}
+
 	.trash {
+		font-size: 0.7em;
 		height: 1.5em;
 		padding: 0.2em;
 		text-align: center;
@@ -126,11 +137,14 @@
 		background: #ff0000;
 	}
 
-	.border.disabled-overlay {
+	.disabled-overlay {
 		position: absolute;
+		width: 100%;
+		height: 100%;
 		z-index: var(--front);
 		top: 0;
 		left: 0;
+		border-radius: 1.3em;
 		background: #000;
 		opacity: 0.5;
 	}

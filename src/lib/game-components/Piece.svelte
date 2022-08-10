@@ -7,6 +7,8 @@
 	export let id: number;
 	export let word: string;
 	export let disabled = false;
+	export let x = 0;
+	export let y = 0;
 
 	// const dispatch = createEventDispatcher();
 	const dispatchDrag = createEventDispatcher<{ drag: { rect: DOMRect } }>();
@@ -15,20 +17,22 @@
 		dragEnd: { rect: DOMRect };
 	}>();
 
-	let position = 'static' as 'static' | 'absolute';
+	let dragged = false;
+
 </script>
 
 <div
-	style:position
+	style:opacity={dragged ? 1 : 0.5}
 	class="piece"
 	use:draggable={{
 		disabled,
+		defaultPosition: { x, y },
 		onDragEnd: (data) => {
 			dispatchDragEnd('dragEnd', { rect: data.domRect });
-			position = 'absolute';
 		},
 		onDragStart: () => {
 			dispatchDragStart('dragStart');
+			dragged = true;
 		},
 		onDrag: (data) => {
 			dispatchDrag('drag', { rect: data.domRect });
@@ -42,6 +46,7 @@
 <style>
 	div {
 		user-select: none;
+		position: absolute;
 		display: inline-block;
 	}
 </style>

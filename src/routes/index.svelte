@@ -13,7 +13,7 @@
 
 	async function connect() {
 		let Colyseus = await import('colyseus.js');
-		$client = new Colyseus.Client('wss://gameserver.lukeshafer.net'); // or whereever your colyseus server instance is
+		$client = new Colyseus.Client('wss://gameserver.dev.lukeshafer.com'); // or whereever your colyseus server instance is
 	}
 
 	onMount(() => {
@@ -25,7 +25,9 @@
 		const newPlayer = state.players.get($room.sessionId);
 		if (newPlayer) $player = newPlayer;
 	});
+	
 </script>
+
 
 {#if !$room}
 	<StartOrJoin />

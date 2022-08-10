@@ -16,8 +16,8 @@
 				x = (position.x - cardBounds.x) / cardBounds.width;
 				y = (position.y - cardBounds.y) / cardBounds.height;
 			} else {
-				x = 0;
-				y = 0;
+				$playedPieces.delete(id);
+				return;
 			}
 			const piece = new Piece();
 			piece.word = word;

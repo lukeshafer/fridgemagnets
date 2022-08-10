@@ -4,6 +4,7 @@
 	/* colors */
 	--piece-color: #efefef;
 	--player-deck: #754a21;
+	--body-background: rgb(216, 125, 14);
 	--card-background: beige;
 	--card-width: min(85vw, 1300px, 60vh);
 	--basis: min(3.7vw, 30px, 3vh);
@@ -19,8 +20,9 @@
 body {
 	overflow: hidden;
 	font-family: 'Special Elite', 'Courier New', monospace;
-	background-color: #2d7376;
+	background-color: var(--body-background);
 	margin: 1rem;
+	color: color-contrast(var(--body-background) vs black, white);
 }
 
 h1 {
@@ -33,6 +35,7 @@ h1 {
 input {
 	font-family: inherit;
 	width: min-content;
+	max-width: 80vw;
 }
 
 .piece {

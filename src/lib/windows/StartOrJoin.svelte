@@ -37,6 +37,8 @@
 	</div>
 </div>
 
+<a href="/submit" class="btn">Submit a prompt suggestion!</a>
+
 <style>
 	.page-wrapper {
 		display: flex;
@@ -62,7 +64,9 @@
 		justify-content: center;
 		text-align: left;
 		gap: 0.5rem;
+		max-width: 90vw;
 	}
+
 
 	label {
 		margin-top: 10px;
@@ -70,5 +74,14 @@
 
 	form > * {
 		margin-right: auto;
+	}
+
+	a {
+		position: absolute;
+		bottom: 1rem;
+		left: 1rem;
+		display: block;
+		text-decoration: none;
+		height: 1.5rem;
 	}
 </style>
