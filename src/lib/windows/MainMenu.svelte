@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { client, room, player } from '$lib/stores';
 	import { onMount } from 'svelte';
+	import { dev } from '$app/env';
 
 	const options = {
 		name: '',
@@ -8,6 +9,7 @@
 	};
 
 	let btn: HTMLButtonElement;
+	let errorText = '';
 
 	onMount(() => {
 		btn.disabled = false;
@@ -22,22 +24,31 @@
 			console.log($room.sessionId, 'joined', $room.name);
 		} catch (err) {
 			console.log('CREATE ERROR', err);
+			errorText =
+				'ERROR: Server is currently offline. If this is not expected, please reach out to Luke!';
 		}
 	};
 </script>
 
 <div class="page-wrapper">
-	<h1 class="title">Ransom Notes Online</h1>
-	<div class="form-wrapper" style:visibility={$client ? 'visible' : 'hidden'}>
-		<form on:submit|preventDefault={createRoom}>
-			<label for="name">Your name</label>
-			<input type="text" class="piece" name="Name" id="name" bind:value={options.name} required />
-			<button type="submit" class="btn" bind:this={btn}>Join</button>
-		</form>
-	</div>
+	<h1 class="title">Fridge Magnets</h1>
+	{#if dev}
+		<div class="form-wrapper" style:visibility={$client ? 'visible' : 'hidden'}>
+			<form on:submit|preventDefault={createRoom} autocomplete="off">
+				<label for="name">Your name</label>
+				<input type="text" class="piece" name="Name" id="name" bind:value={options.name} required />
+				<div class="button-wrapper">
+					<button type="submit" class="btn" bind:this={btn}>Join</button>
+					<p>{errorText}</p>
+				</div>
+			</form>
+		</div>
+	{:else}
+		<h2>COMING SOON!</h2>
+	{/if}
 </div>
 
-<a href="/submit" class="btn">Submit a prompt suggestion!</a>
+<a href="/submit" class="btn">Suggest a prompt!</a>
 
 <style>
 	.page-wrapper {
@@ -57,6 +68,17 @@
 		text-align: left;
 	}
 
+	.button-wrapper {
+		display: flex;
+		gap: 1rem;
+		align-items: center;
+	}
+
+	.button-wrapper > p {
+		color: red;
+		font-size: 12px;
+	}
+
 	form {
 		display: flex;
 		flex-direction: column;
@@ -67,21 +89,11 @@
 		max-width: 90vw;
 	}
 
-
 	label {
 		margin-top: 10px;
 	}
 
 	form > * {
 		margin-right: auto;
-	}
-
-	a {
-		position: absolute;
-		bottom: 1rem;
-		left: 1rem;
-		display: block;
-		text-decoration: none;
-		height: 1.5rem;
 	}
 </style>

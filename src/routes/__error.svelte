@@ -1,17 +1,25 @@
 <script context="module" lang="ts">
 	import type { Load } from '@sveltejs/kit';
-	/** @type {import('@sveltejs/kit').Load} */
-	export const load: Load = ({ error, status }) => {
+
+	export const load: Load = async ({ error, status }) => {
 		return {
 			props: {
-				title: `${status}: ${error?.message}`
+				status,
+				message: error?.message
 			}
 		};
 	};
 </script>
 
 <script lang="ts">
-	export let title: string;
+	import { onMount } from 'svelte';
+	export let status: number, message: string;
+	onMount(() => {
+		if (status === 404) window.location.replace('/');
+	});
 </script>
 
-<h1>{title}</h1>
+{#if status !== 404}
+	<h1>{status}</h1>
+	<p>{message}</p>
+{/if}

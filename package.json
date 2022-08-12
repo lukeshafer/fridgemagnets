@@ -1,6 +1,6 @@
 {
-	"name": "ransomnotes",
-	"version": "0.0.1",
+	"name": "fridge-magnets",
+	"version": "0.0.2",
 	"scripts": {
 		"dev-d": "screen -dmS dev-server pnpm dev",
 		"dev": "vite dev",

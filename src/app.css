@@ -4,7 +4,7 @@
 	/* colors */
 	--piece-color: #efefef;
 	--player-deck: #754a21;
-	--body-background: rgb(216, 125, 14);
+	--body-background: #fda;
 	--card-background: beige;
 	--card-width: min(85vw, 1300px, 60vh);
 	--basis: min(3.7vw, 30px, 3vh);
@@ -19,7 +19,8 @@
 
 body {
 	overflow: hidden;
-	font-family: 'Special Elite', 'Courier New', monospace;
+	/* Current available fonts: Roboto Slab, Cutive Mono, Xanh Mono */
+	font-family: 'Roboto Slab', monospace;
 	background-color: var(--body-background);
 	margin: 1rem;
 	color: color-contrast(var(--body-background) vs black, white);
@@ -58,9 +59,20 @@ input {
 	font-size: 1.5rem;
 	border: none;
 	text-align: center;
+	display: flex;
+	align-items: center;
 	color: black;
 	font-family: inherit;
 	background-color: var(--card-background);
 	cursor: pointer;
 	box-shadow: 0.1rem 0.1rem 0 #00000066;
+}
+
+a {
+	position: absolute;
+	bottom: 1rem;
+	left: 1rem;
+	display: block;
+	text-decoration: none;
+	height: fit-content;
 }

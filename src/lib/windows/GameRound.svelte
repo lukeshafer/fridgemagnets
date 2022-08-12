@@ -54,4 +54,10 @@
 		gap: 10px;
 		height: 80vh;
 	}
+
+	.buttons {
+		position: absolute;
+		left: 1rem;
+		bottom: 1rem;
+	}
 </style>
