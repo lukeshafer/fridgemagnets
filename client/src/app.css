@@ -1,0 +1,78 @@
+/* Write your global styles here, in PostCSS syntax */
+
+:root {
+	/* colors */
+	--piece-color: #efefef;
+	--player-deck: #754a21;
+	--body-background: #fda;
+	--card-background: beige;
+	--card-width: min(85vw, 1300px, 60vh);
+	--basis: min(3.7vw, 30px, 3vh);
+
+	/* positioning */
+	--front: 100;
+	--middle: 50;
+	--back: 0;
+
+	font-size: 100%;
+}
+
+body {
+	overflow: hidden;
+	/* Current available fonts: Roboto Slab, Cutive Mono, Xanh Mono */
+	font-family: 'Roboto Slab', monospace;
+	background-color: var(--body-background);
+	margin: 1rem;
+	color: color-contrast(var(--body-background) vs black, white);
+}
+
+h1 {
+	font-size: 4rem;
+	margin: 2rem;
+	max-width: 20rem;
+	letter-spacing: 0.1em;
+}
+
+input {
+	font-family: inherit;
+	width: min-content;
+	max-width: 80vw;
+}
+
+.piece {
+	background-color: var(--piece-color);
+	color: black;
+	padding: 0.5rem 0.8rem;
+	width: fit-content;
+	z-index: var(--front) !important;
+	font-size: 1.8em;
+	box-shadow: 2px 2px black, -1px -1px black;
+}
+.piece > p {
+	font-size: 1em;
+	margin: 0;
+}
+
+.btn {
+	height: 3rem;
+	padding: 0.5rem;
+	font-size: 1.5rem;
+	border: none;
+	text-align: center;
+	display: flex;
+	align-items: center;
+	color: black;
+	font-family: inherit;
+	background-color: var(--card-background);
+	cursor: pointer;
+	box-shadow: 0.1rem 0.1rem 0 #00000066;
+}
+
+a {
+	position: absolute;
+	bottom: 1rem;
+	left: 1rem;
+	display: block;
+	text-decoration: none;
+	height: fit-content;
+}
