@@ -10,7 +10,7 @@
 		"build": "npm run clean && tsc && node node_modules/copyfiles/copyfiles package.json ./lib && node node_modules/copyfiles/copyfiles arena.env ./lib",
 		"clean": "node node_modules/rimraf/bin lib",
 		"test": "mocha --require ts-node/register test/**_test.ts --exit --timeout 15000",
-		"schema-codegen": "schema-codegen src/rooms/schema/*.ts --output ../ransomnotes/src/lib/schema/ --ts"
+		"schema-codegen": "schema-codegen src/rooms/schema/*.ts --output ../ransomnotes-client/src/lib/schema/ --ts"
 	},
 	"author": "",
 	"license": "UNLICENSED",

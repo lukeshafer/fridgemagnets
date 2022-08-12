@@ -7,7 +7,7 @@ import { monitor } from '@colyseus/monitor';
 import { MyRoom } from './rooms/MyRoom';
 
 export default Arena({
-	getId: () => 'Your Colyseus App',
+	getId: () => 'Fridge Magnets App',
 
 	initializeGameServer: (gameServer) => {
 		/**
@@ -20,8 +20,8 @@ export default Arena({
 		/**
 		 * Bind your custom express routes here:
 		 */
-		app.get('/', (req, res) => {
-			res.send("It's time to kick ass and chew bubblegum!");
+		app.get('/', (_req, res) => {
+			res.send('Hey! This is the server, get outta here!');
 		});
 
 		/**

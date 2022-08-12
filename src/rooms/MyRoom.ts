@@ -4,7 +4,7 @@ import { MyRoomState, Player, Piece } from './schema/MyRoomState';
 export class MyRoom extends Room<MyRoomState> {
 	// default options
 	maxClients = 6;
-	handSize = 25;
+	handSize = 70;
 	currentPrompt = '';
 	players: IterableIterator<string> | undefined;
 
@@ -38,6 +38,7 @@ export class MyRoom extends Room<MyRoomState> {
 			'submitAnswer',
 			(client, message: { status: string; pieces: Piece[] }) => {
 				this.state.players.get(client.sessionId).status = 'finished';
+				this.state.players.get(client.sessionId).submission.clear();
 				message.pieces.forEach((piece) => {
 					const p = new Piece(piece.word, piece.id, piece.x, piece.y);
 					this.state.players.get(client.sessionId).submission.push(p);
