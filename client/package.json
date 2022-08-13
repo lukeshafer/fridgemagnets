@@ -1,6 +1,7 @@
 {
-	"name": "fridge-magnets",
+	"name": "client",
 	"version": "0.0.2",
+	"main": "build/index.js",
 	"scripts": {
 		"dev-d": "screen -dmS dev-server pnpm dev",
 		"dev": "vite dev",
@@ -12,7 +13,7 @@
 		"check:watch": "svelte-check --tsconfig ./tsconfig.json --watch",
 		"lint": "prettier --check --plugin-search-dir=. . && eslint .",
 		"format": "prettier --write --plugin-search-dir=. .",
-		"serve": "HOST=localhost PORT=4728 node build/"
+		"start": "HOST=localhost PORT=4728 node ."
 	},
 	"devDependencies": {
 		"@neodrag/svelte": "^1.2.3",

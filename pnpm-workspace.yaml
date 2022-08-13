@@ -1,4 +1,4 @@
 packages:
   # Game client (frontend) and server (backend) directories
-  - 'client'
-  - 'server'
+  - "client"
+  - "server"

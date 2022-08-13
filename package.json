@@ -1,12 +1,14 @@
 {
-  "name": "fridgemagnets",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC"
+	"name": "fridgemagnets",
+	"version": "0.0.1",
+	"main": "index.js",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1",
+		"build": "pnpm --stream -r build",
+		"clean": "pnpm --stream -r clean",
+		"start": "pnpm --stream -r start"
+	},
+	"keywords": [],
+	"author": "Luke Shafer",
+	"license": "MIT"
 }
