@@ -16,7 +16,7 @@
 		<h2>{showcasePlayer.name}</h2>
 		<ShowcaseCard showcase={showcasePlayer.submission} />
 		<PromptCard prompt={$room.state.currentPrompt.prompt} />
-		{#if $player.isVIP}<button class='card' on:click={() => $room.send('advanceShowcase')}>Advance</button>
+		{#if $player.isVIP}<button class='btn' on:click={() => $room.send('advanceShowcase')}>Advance</button>
 		{:else}<p >Waiting on host....</p>
 		{/if}
 	{/if}

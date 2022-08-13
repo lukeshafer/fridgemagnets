@@ -19,7 +19,7 @@
 </script>
 
 <div class="outer">
-	<h1>Hello {$player.name}!</h1>
+	<h1><span >Hello</span> <span style:background-color="white">{$player.name}</span><span>!</span></h1>
 
 	<div class="inner">
 		{#if $player.isVIP}<button class="btn first-child" on:click={startGame}> Start Game </button>

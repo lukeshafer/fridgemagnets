@@ -31,7 +31,7 @@
 </script>
 
 <div class="page-wrapper">
-	<h1 class="title">Fridge Magnets</h1>
+	<h1 class="title"><span>Fridge</span> <span>Magnets</span></h1>
 	{#if dev}
 		<div class="form-wrapper" style:visibility={$client ? 'visible' : 'hidden'}>
 			<form on:submit|preventDefault={createRoom} autocomplete="off">

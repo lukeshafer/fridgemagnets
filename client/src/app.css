@@ -20,7 +20,7 @@
 body {
 	overflow: hidden;
 	/* Current available fonts: Roboto Slab, Cutive Mono, Xanh Mono */
-	font-family: 'Roboto Slab', monospace;
+	font-family: 'Xanh Mono', monospace;
 	background-color: var(--body-background);
 	margin: 1rem;
 	color: color-contrast(var(--body-background) vs black, white);
@@ -30,7 +30,19 @@ h1 {
 	font-size: 4rem;
 	margin: 2rem;
 	max-width: 20rem;
-	letter-spacing: 0.1em;
+	display: flex;
+	flex-direction: column;
+	gap: 0.4rem;
+	/*letter-spacing: 0.1em;*/
+}
+
+
+h1 * {
+	background-color: var(--piece-color);
+	color: black;
+	padding: 0.5rem 0.8rem;
+	width: fit-content;
+	box-shadow: 2px 2px black, -1px -1px black;
 }
 
 input {
@@ -44,7 +56,7 @@ input {
 	color: black;
 	padding: 0.5rem 0.8rem;
 	width: fit-content;
-	z-index: var(--front) !important;
+	z-index: var(--front); 
 	font-size: 1.8em;
 	box-shadow: 2px 2px black, -1px -1px black;
 }
