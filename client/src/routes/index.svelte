@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { PUBLIC_SERVER_URL } from '$env/static/public';
 
 	import GameRound from '$lib/windows/GameRound.svelte';
 	import MainMenu from '$lib/windows/MainMenu.svelte';
@@ -13,7 +14,7 @@
 
 	async function connect() {
 		let Colyseus = await import('colyseus.js');
-		$client = new Colyseus.Client('wss://gameserver.dev.lukeshafer.com'); // or whereever your colyseus server instance is
+		$client = new Colyseus.Client(PUBLIC_SERVER_URL); // or whereever your colyseus server instance is
 	}
 
 	onMount(() => {
