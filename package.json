@@ -12,5 +12,8 @@
 	},
 	"keywords": [],
 	"author": "Luke Shafer",
-	"license": "MIT"
+	"license": "MIT",
+	"engines": {
+		"node": "16.15.1"
+	}
 }
