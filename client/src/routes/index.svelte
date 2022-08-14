@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { PUBLIC_SERVER_URL } from '$env/static/public';
+
+	const PUBLIC_SERVER_URL = import.meta.env.VITE_PUBLIC_SERVER_URL;
 
 	import GameRound from '$lib/windows/GameRound.svelte';
 	import MainMenu from '$lib/windows/MainMenu.svelte';
