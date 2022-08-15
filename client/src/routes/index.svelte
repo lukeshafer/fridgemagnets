@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 
-	const PUBLIC_SERVER_URL = import.meta.env.VITE_PUBLIC_SERVER_URL;
 
 	import GameRound from '$lib/windows/GameRound.svelte';
 	import MainMenu from '$lib/windows/MainMenu.svelte';
@@ -13,13 +12,13 @@
 	/*import { quintOut } from 'svelte/easing';*/
 	import Showcase from '$lib/windows/Showcase.svelte';
 
-	async function connect() {
+	async function connect(host: string) {
 		let Colyseus = await import('colyseus.js');
-		$client = new Colyseus.Client(PUBLIC_SERVER_URL); // or whereever your colyseus server instance is
+		$client = new Colyseus.Client(`wss://${host}`); // or whereever your colyseus server instance is
 	}
 
 	onMount(() => {
-		connect();
+		connect(window.location.host);
 	});
 
 	$: $room?.onStateChange((state) => {

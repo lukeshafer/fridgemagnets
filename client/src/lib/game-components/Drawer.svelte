@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { afterUpdate, tick } from 'svelte';
-	import { draggable } from '@neodrag/svelte';
 
 	let deck: HTMLDivElement;
 	export let right = 0;

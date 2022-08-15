@@ -2,11 +2,13 @@
 	"name": "fridgemagnets",
 	"version": "0.0.1",
 	"main": "index.js",
+	"type": "module",
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1",
 		"build": "pnpm --stream -r build",
 		"clean": "pnpm --stream -r clean",
-		"start": "pnpm --stream -r start",
+		"start": "node .",
+		"dev": "pnpm --stream -r dev",
 		"frontend": "pnpm --filter client dev",
 		"backend": "pnpm --filter server dev"
 	},
@@ -15,5 +17,8 @@
 	"license": "MIT",
 	"engines": {
 		"node": "16.15.1"
+	},
+	"dependencies": {
+		"express": "^4.16.4"
 	}
 }

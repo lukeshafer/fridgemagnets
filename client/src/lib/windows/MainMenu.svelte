@@ -1,7 +1,6 @@
 <script lang="ts">
-	import { client, room, player } from '$lib/stores';
+	import { client, room, } from '$lib/stores';
 	import { onMount } from 'svelte';
-	import { dev } from '$app/env';
 
 	const options = {
 		name: '',
@@ -32,7 +31,6 @@
 
 <div class="page-wrapper">
 	<h1 class="title"><span>Fridge</span> <span>Magnets</span></h1>
-	{#if dev}
 		<div class="form-wrapper" style:visibility={$client ? 'visible' : 'hidden'}>
 			<form on:submit|preventDefault={createRoom} autocomplete="off">
 				<label for="name">Your name</label>
@@ -43,12 +41,9 @@
 				</div>
 			</form>
 		</div>
-	{:else}
-		<h2>COMING SOON!</h2>
-	{/if}
 </div>
 
-<a href="/submit" class="btn">Suggest a prompt!</a>
+<a href="https://docs.google.com/forms/d/e/1FAIpQLSdlhgBV4yFDX9EOCz3MMpT3OC3TL-ArnXbp8F8i0xm76k9OuA/viewform?usp=sf_link" target="_blank" class="btn">Suggest a prompt!</a>
 
 <style>
 	.page-wrapper {

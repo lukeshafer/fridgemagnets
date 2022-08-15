@@ -1,7 +1,7 @@
 import { Room, Client } from 'colyseus';
 import { MyRoomState, Player, Piece } from './schema/MyRoomState';
 
-export class MyRoom extends Room<MyRoomState> {
+export class Game extends Room<MyRoomState> {
 	// default options
 	maxClients = 6;
 	handSize = 70;
