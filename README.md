@@ -50,8 +50,6 @@ Last year, my wife bought the _Ransom Notes_ card game based on a very convincin
 
 ## Running your own game instance
 
-_Not recommended unless you know what you're doing (at least until I get more features finalized!)_ :smile:
-
 You can run your own instance by cloning this server, and running the following commands in the repo root:
 
 ```bash
@@ -59,6 +57,5 @@ pnpm run build
 pnpm run start
 ```
 
-This will serve the client and server on your local machine on ports 4723 and 2567, respectively.
+This will serve the client and server on your local machine on whichever port is in the $PORT env variable, or 42824 if there is none.
 
-_**PLEASE NOTE:** Right now, the client by default points to the public game server for Fridge Magnets. You will need to update the src/routes/index.svelte file manually if you want to run the server. This will be fixed in a future update_
