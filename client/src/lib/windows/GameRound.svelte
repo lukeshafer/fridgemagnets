@@ -12,9 +12,6 @@
 
 	$room.onStateChange((state) => {
 		hand = $player.hand;
-		hand.forEach((piece) => {
-			// console.log(piece.word);
-		});
 	});
 </script>
 
@@ -56,8 +53,9 @@
 	}
 
 	.buttons {
-		position: absolute;
+		width: 100%;
+		/* position: absolute;
 		left: 1rem;
-		bottom: 1rem;
+		bottom: 1rem; */
 	}
 </style>

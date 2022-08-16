@@ -42,4 +42,10 @@
 	/*};*/
 </script>
 
-<button class="btn" on:click={handleClick}> I'm done! </button>
+<button class="btn" on:click={handleClick}>I'm done!</button>
+
+<style>
+	button {
+		z-index: var(--front);
+	}
+</style>

@@ -46,10 +46,10 @@
 	.wrapper {
 		position: fixed;
 		bottom: 0;
-		width: 100%;
+		width: calc(100% - 2rem);
 		height: 50vh;
 		transform: translate3d(0, calc(50vh - 50px), 0);
-		z-index: var(--front); 
+		z-index: var(--middle);
 
 		display: flex;
 		flex-direction: column;
@@ -69,7 +69,7 @@
 		/* left: 0; */
 		/* right: 0; */
 		background: var(--player-deck);
-		z-index: var(--front); 
+		z-index: var(--front);
 
 		display: flex;
 		flex-flow: column wrap;
