@@ -31,7 +31,7 @@
 		"@neodrag/svelte": "^1.2.3",
 		"@sveltejs/adapter-auto": "next",
 		"@sveltejs/adapter-node": "1.0.0-next.86",
-		"@sveltejs/kit": "next",
+		"@sveltejs/kit": "1.0.0-next.420",
 		"autoprefixer": "^10.4.7",
 		"colyseus.js": "^0.14.13",
 		"normalize.css": "^8.0.1",
