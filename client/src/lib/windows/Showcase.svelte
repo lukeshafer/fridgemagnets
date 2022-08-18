@@ -14,8 +14,10 @@
 <div>
 	{#if showcasePlayer?.submission}
 		<h2>{showcasePlayer.name}</h2>
-		<ShowcaseCard showcase={showcasePlayer.submission} />
-		<PromptCard prompt={$room.state.currentPrompt.prompt} />
+		<div class="cards">
+			<ShowcaseCard showcase={showcasePlayer.submission} />
+			<PromptCard prompt={$room.state.currentPrompt.prompt} />
+		</div>
 		{#if $player.isVIP}<button class="btn" on:click={() => $room.send('advanceShowcase')}
 				>Next</button
 			>
@@ -28,8 +30,14 @@
 	div {
 		display: flex;
 		flex-direction: column;
+		flex-wrap: wrap;
 		align-items: center;
 		justify-content: center;
 		gap: 1rem;
+	}
+	
+	.cards {
+		flex-direction: row;
+		width: 100%;
 	}
 </style>

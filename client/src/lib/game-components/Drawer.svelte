@@ -24,17 +24,6 @@
 
 <svelte:window on:resize={getNewBounds} />
 
-<!-- 
-		use:draggable={{
-			axis: 'y',
-			onDragEnd: () => {
-				toggleDrawer();
-				// reset button
-			}
-		}}
-
- -->
-
 <div class="wrapper" class:open>
 	<button class="btn" on:click={toggleDrawer}><span>▲</span></button>
 	<div class="deck" bind:this={deck}>
@@ -46,10 +35,11 @@
 	.wrapper {
 		position: fixed;
 		bottom: 0;
-		width: calc(100% - 2rem);
+		width: calc(100%);
+		margin-left: -1rem;
 		height: 50vh;
 		transform: translate3d(0, calc(50vh - 50px), 0);
-		z-index: var(--middle);
+		/* z-index: var(--middle); */
 
 		display: flex;
 		flex-direction: column;

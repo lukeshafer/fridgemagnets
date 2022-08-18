@@ -7,14 +7,14 @@
 	--body-background: #fda;
 	--card-background: beige;
 	--card-width: min(85vw, 1300px, 60vh);
-	--basis: min(3.7vw, 30px, 3vh);
+	--basis: min(3.7vw, 30px, 2.8vh);
 
 	/* positioning */
 	--front: 100;
 	--middle: 50;
 	--back: 0;
 
-	font-size: 100%;
+	font-size: min(100%, 5vw, 4vh);
 }
 
 body {
@@ -27,7 +27,7 @@ body {
 }
 
 h1 {
-	font-size: 4rem;
+	font-size: 3.8rem;
 	margin: 2rem;
 	max-width: 20rem;
 	display: flex;
@@ -55,17 +55,18 @@ input {
 	color: black;
 	padding: 0.2em 0.4em;
 	width: fit-content;
-	z-index: var(--front);
+	z-index: var(middle);
 	font-size: 1.8em;
 	box-shadow: 2px 2px black, -1px -1px black;
 }
+
 .piece > p {
 	font-size: 1em;
 	margin: 0;
 }
 
 .btn {
-	height: 3rem;
+	/* height: 3rem; */
 	padding: 0.5rem;
 	font-size: 1.5rem;
 	border: none;
@@ -79,11 +80,10 @@ input {
 	box-shadow: 0.1rem 0.1rem 0 #00000066;
 }
 
-a {
-	position: absolute;
-	bottom: 1rem;
+a.btn {
+	/* position: absolute; */
+	/* font-size: 1.3rem; */
+	top: 1rem;
 	left: 1rem;
-	display: block;
 	text-decoration: none;
-	height: fit-content;
 }

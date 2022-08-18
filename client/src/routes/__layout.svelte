@@ -8,6 +8,8 @@
 	};
 </script>
 
+<svelte:head><title>Fridge Magnets</title></svelte:head>
+
 <button class="btn" on:click={shuffleBackgroundColor}><span>✨</span></button>
 
 <slot />

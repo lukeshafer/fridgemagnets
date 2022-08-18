@@ -42,7 +42,7 @@
 	/*};*/
 </script>
 
-<button class="btn" on:click={handleClick}>I'm done!</button>
+<button class="btn" on:click={handleClick}>Done! ✔️</button>
 
 <style>
 	button {

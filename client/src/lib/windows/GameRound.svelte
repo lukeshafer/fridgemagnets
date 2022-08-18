@@ -19,14 +19,14 @@
 <div class="game-wrapper">
 	<PromptCard prompt={currentPrompt || ''} />
 	<PlayerCard />
-</div>
 
-<div class="buttons">
-	{#if $player.status === 'editing'}
-		<DoneButton />
-	{:else if $player.status === 'finished'}
-		<EditButton />
-	{/if}
+	<div class="buttons">
+		{#if $player.status === 'editing'}
+			<DoneButton />
+		{:else if $player.status === 'finished'}
+			<EditButton />
+		{/if}
+	</div>
 </div>
 
 <Drawer>
@@ -49,11 +49,12 @@
 		align-items: center;
 		justify-content: center;
 		gap: 10px;
-		height: 80vh;
+		height: 70vh;
 	}
 
 	.buttons {
 		width: 100%;
+		max-width: 30rem;
 		/* position: absolute;
 		left: 1rem;
 		bottom: 1rem; */

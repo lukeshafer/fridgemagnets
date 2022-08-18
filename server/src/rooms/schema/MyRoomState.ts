@@ -76,6 +76,7 @@ export class Player extends Schema {
 	@type('boolean') isVIP: boolean = false;
 	@type('string') status: PlayerStatus = 'waiting';
 	@type({ array: Piece }) submission = new ArraySchema<Piece>();
+	@type('boolean') connected: boolean;
 }
 
 export class MyRoomState extends Schema {

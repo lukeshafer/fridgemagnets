@@ -1,18 +1,55 @@
 import { Room, Client } from 'colyseus';
 import { MyRoomState, Player, Piece } from './schema/MyRoomState';
 
+import resetPlayers from './roomFunctions/resetPlayers';
+
+const LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+
 export class Game extends Room<MyRoomState> {
 	// default options
-	maxClients = 6;
-	handSize = 70;
+	maxClients = 8;
+	handSize = 60;
 	currentPrompt = '';
 	players: IterableIterator<string> | undefined;
+	started = false;
 
-	onCreate(options: any) {
+	// The channel where we register the room IDs.
+	// This can be anything you want, it doesn't have to be `$mylobby`.
+	LOBBY_CHANNEL = '$mylobby';
+
+	// Generate a single 4 capital letter room ID.
+	generateRoomIdSingle(): string {
+		let result = '';
+		for (var i = 0; i < 4; i++) {
+			result += LETTERS.charAt(Math.floor(Math.random() * LETTERS.length));
+		}
+		return result;
+	}
+
+	// 1. Get room IDs already registered with the Presence API.
+	// 2. Generate room IDs until you generate one that is not already used.
+	// 3. Register the new room ID with the Presence API.
+	async generateRoomId(): Promise<string> {
+		const currentIds = await this.presence.smembers(this.LOBBY_CHANNEL);
+		let id;
+		do {
+			id = this.generateRoomIdSingle();
+		} while (currentIds.includes(id));
+
+		await this.presence.sadd(this.LOBBY_CHANNEL, id);
+		return id;
+	}
+
+	async onCreate(options: any) {
+		this.roomId = await this.generateRoomId();
 		console.log('Creating room', this.roomId);
 		// Setting options, or leaving defaults
 		this.handSize = options.handSize || this.handSize;
 		this.maxClients = options.maxClients || this.maxClients;
+
+		if (options.private) {
+			this.setPrivate(true);
+		}
 
 		this.setState(new MyRoomState());
 
@@ -61,6 +98,7 @@ export class Game extends Room<MyRoomState> {
 
 	startGame() {
 		this.lock();
+		this.started = true;
 		this.state.deck.shuffle();
 		console.log('Dealing cards...');
 		this.dealHands();
@@ -108,6 +146,7 @@ export class Game extends Room<MyRoomState> {
 		this.state.gamePhase = 'playing';
 	}
 
+	// Can be removed soon in favor of external function
 	resetPlayers() {
 		this.state.players.forEach((player) => {
 			for (let i = 0; i < player.submission.length; i++) {
@@ -142,7 +181,7 @@ export class Game extends Room<MyRoomState> {
 		this.state.players.set(client.sessionId, player);
 	}
 
-	onLeave(client: Client, consented: boolean) {
+	async onLeave(client: Client, consented: boolean) {
 		console.log(client.sessionId, 'left!');
 		console.log('consented:', consented);
 
@@ -151,10 +190,29 @@ export class Game extends Room<MyRoomState> {
 			[...this.state.players][1][1].isVIP = true;
 		}
 
+		this.state.players.get(client.sessionId).connected = false;
+
+		try {
+			if (consented) {
+				throw new Error('consented leave');
+			}
+
+			// allow disconnected client to reconnect into this room until 20 seconds
+			await this.allowReconnection(client, 20);
+
+			// client returned! let's re-activate it.
+			this.state.players.get(client.sessionId).connected = true;
+		} catch (e) {
+			// 20 seconds expired. let's remove the client.
+			this.state.players.delete(client.sessionId);
+		}
+
 		this.state.players.delete(client.sessionId);
 	}
 
-	onDispose() {
+	async onDispose() {
+		this.roomId = await this.generateRoomId();
+		this.presence.srem(this.LOBBY_CHANNEL, this.roomId);
 		console.log('room', this.roomId, 'disposing...');
 	}
 }

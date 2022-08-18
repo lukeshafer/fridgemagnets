@@ -18,7 +18,8 @@
 	}
 
 	onMount(() => {
-		connect(window.location.host);
+		if (import.meta.env.DEV) connect(import.meta.env.VITE_DEV_SERVER_HOST)
+		else connect(window.location.host);
 	});
 
 	$: $room?.onStateChange((state) => {

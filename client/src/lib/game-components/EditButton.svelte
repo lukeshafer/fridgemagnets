@@ -5,4 +5,4 @@
 	};
 </script>
 
-<button class="btn" on:click={handleClick}>Wait! Not done!</button>
+<button class="btn" on:click={handleClick}>Edit ✏️</button>

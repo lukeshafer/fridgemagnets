@@ -28,11 +28,12 @@
 	.border {
 		background: #111;
 		background: linear-gradient(to right bottom, #333 0 48%, #111 50% 100%);
-		width: 25rem;
-		height: 15rem;
-		padding: 0.3rem;
+		width: 25em;
+		height: 15em;
+		padding: 0.3em;
 		position: relative;
-		border-radius: 2rem;
+		border-radius: 2em;
+		font-size: calc(var(--basis)*0.9);
 	}
 
 	.card {
