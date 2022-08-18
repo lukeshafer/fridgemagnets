@@ -29,6 +29,7 @@
 				case 'createPrivate':
 					$room = await $client.create('lobby', { name, private: true });
 					console.log($room.sessionId, 'created', $room.name);
+					break;
 				case 'joinPrivate':
 					if (roomcode) {
 						$room = await $client.joinById(roomcode, { name });
