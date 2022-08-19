@@ -21,8 +21,8 @@
 </script>
 
 <div class="outer">
-	<h1 style:flex-direction="row">
-		<span>Hello</span> <span style:background-color="white">{$player.name}</span><span>!</span>
+	<h1>
+		<span>Hello</span> <div class=name><span style:background-color="white">{$player.name}</span><span>!</span></div>
 	</h1>
 	<h2>Room Code: {$room.id}</h2>
 
@@ -34,7 +34,7 @@
 		<ul>
 			<h2>Players</h2>
 			{#if playerList}
-				{#each [...playerList] as [key, player]}
+				{#each [...playerList] as [_key, player]}
 					<li class="piece" style:margin-left="{Math.random() * 100}px">
 						<p>{player.name}</p>
 						{#if player.isVIP}
@@ -59,6 +59,14 @@
 		flex-flow: row wrap;
 		justify-content: center;
 		gap: 1em;
+	}
+
+	div.name {
+		background: none;
+		border: none;
+		box-shadow: none;
+		display: flex;
+		gap: 1rem;
 	}
 
 	/* idea: make the names in the style of traditional ransom notes - random fonts and sizes */
