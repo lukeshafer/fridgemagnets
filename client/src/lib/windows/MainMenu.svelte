@@ -1,92 +1,107 @@
 <script lang="ts">
-	import { client, room } from '$lib/stores';
+	import { room, client } from '$lib/stores';
 	import { onMount } from 'svelte';
 
 	let name: string;
-	let roomcode: string;
+	let roomID: string;
+	let oldRoomID: string;
+	let oldSessionID: string;
+	let oldSessionExp: Date;
+	let isSessionValid: boolean;
 
 	let errorText = '';
 
-	const btns: HTMLButtonElement[] = [];
+	onMount(async () => {
+		name = sessionStorage.getItem('name') || '';
+		oldRoomID = sessionStorage.getItem('roomID') || '';
+		oldSessionID = sessionStorage.getItem('sessionID') || '';
+		oldSessionExp = new Date(sessionStorage.getItem('sessionExp') || '');
 
-	onMount(() => {
-		btns.map((btn) => btn.disabled);
+		if (oldSessionExp < new Date()) oldRoomID = '';
 	});
 
-	const roomHandler = async (command: 'joinPublic' | 'createPrivate' | 'joinPrivate') => {
-		console.log(`Command ${command} called`);
-		btns.map((btn) => btn.disabled);
-		if (!name) {
-			alert('Name is required!');
-			return;
+	const checkIfSessionActive = () => {
+		if (oldSessionExp < new Date()) {
+			isSessionValid = false;
+		} else {
+			isSessionValid = true;
+			setTimeout(checkIfSessionActive, 2000);
 		}
+	};
+
+	checkIfSessionActive();
+
+	$: if (roomID?.length > 4) {
+		roomID = roomID.substring(0, 4);
+	}
+
+	$: name = name?.replaceAll(/[;=]/g, '');
+	$: roomID = roomID?.toUpperCase();
+	$: roomID = roomID?.replaceAll(/[^A-Z]/g, '');
+
+	const joinRoom = async () => {
+		sessionStorage.setItem('name', name);
 		try {
-			switch (command) {
-				case 'joinPublic':
-					$room = await $client.joinOrCreate('lobby', { name });
-					console.log($room.sessionId, 'joined', $room.name);
-					break;
-				case 'createPrivate':
-					$room = await $client.create('lobby', { name, private: true });
-					console.log($room.sessionId, 'created', $room.name);
-					break;
-				case 'joinPrivate':
-					if (roomcode) {
-						$room = await $client.joinById(roomcode, { name });
-						console.log($room.sessionId, 'joined', $room.name);
-					} else alert('Room code is required!');
-					break;
-				default:
-					alert("This shouldn't happen!");
-					break;
-			}
+			$room = await $client.joinById(roomID, { name });
+			console.log($room.sessionId, 'joined', $room.name);
 		} catch (err) {
-			console.log('ROOM ERROR', err);
-			errorText = 'SERVER ERROR. If this is not expected, please reach out to Luke!';
+			console.log('JOIN ERROR', err);
+		}
+	};
+
+	const createRoom = async () => {
+		sessionStorage.setItem('name', name);
+		try {
+			$room = await $client.create('lobby', { name, private: true });
+			console.log($room.sessionId, 'created', $room.name);
+		} catch (err) {
+			console.log('CREATE ERROR', err);
+		}
+	};
+
+	const tryRejoining = async () => {
+		try {
+			$room = await $client.reconnect(oldRoomID, oldSessionID);
+		} catch (err) {
+			console.log('ERROR REJOINING', err);
 		}
 	};
 </script>
 
 <div class="page-wrapper">
-	<form action="" on:submit|preventDefault>
-		<div class="name-wrapper">
-			<h1 class="title"><span>Fridge</span> <span>Magnets</span></h1>
-		</div>
-		<div class="buttons" style:visibility={$client ? 'visible' : 'hidden'}>
+	<h1 class="title"><span>Fridge</span> <span>Magnets</span></h1>
+	<div class="buttons" style:visibility={$client ? 'visible' : 'hidden'}>
+		<div method="post" class="form create">
 			<input
 				type="text"
 				class="piece"
-				name="name"
 				id="name"
 				bind:value={name}
 				placeholder="Your Name"
 				required
 			/>
-			<div class="button-wrapper">
-				<button
-					class="btn"
-					bind:this={btns[btns.length]}
-					on:click={() => roomHandler('createPrivate')}>Create Room</button
-				>
-			</div>
-			<div class="button-wrapper roomcode-wrapper">
-				<input
-					type="text"
-					class="piece"
-					name="roomcode"
-					id="roomcode"
-					bind:value={roomcode}
-					placeholder="Room Code"
-				/>
-				<button
-					class="btn"
-					bind:this={btns[btns.length]}
-					on:click={() => roomHandler('joinPrivate')}>Join Room</button
-				>
-				<p>{errorText}</p>
-			</div>
+			<button on:click={createRoom} class="btn">Create Room</button>
 		</div>
-	</form>
+		<div class="form">
+			<input type="text" bind:value={name} hidden aria-hidden="true" required />
+			<input
+				type="text"
+				class="piece"
+				id="roomID"
+				bind:value={roomID}
+				placeholder="Room Code"
+				required
+			/>
+			<button on:click={joinRoom} class="btn">Join Room</button>
+			<!-- <a href="/room/{roomID}" class="btn" disabled={roomID?.length < 4}>Join Room</a> -->
+			<p class="error">{errorText}</p>
+		</div>
+		{#key isSessionValid}
+			{#if oldSessionID && isSessionValid}
+				<button on:click={tryRejoining} class="btn">Re-join disconnected game</button>
+			{/if}
+		{/key}
+	</div>
 </div>
 
 <a
@@ -99,12 +114,13 @@
 	:global(body) {
 		overflow-y: scroll;
 	}
-	form {
+	.page-wrapper {
 		margin: 2rem 0;
 		display: flex;
 		flex-flow: row wrap;
 		justify-content: center;
 		align-items: center;
+		min-height: 62vh;
 		gap: 2rem;
 
 		grid-template-columns: repeat(auto-fit, min(30rem, 80vw));
@@ -112,12 +128,15 @@
 		place-items: center;
 	}
 
-	.name-wrapper {
+	.form {
 		display: flex;
-		flex-flow: row wrap;
-		justify-content: center;
+		gap: 1rem;
 		align-items: center;
-		gap: 3rem;
+		justify-content: center;
+	}
+
+	.form.create {
+		flex-direction: column;
 	}
 
 	h1 {
@@ -129,11 +148,7 @@
 		text-align: center;
 	}
 
-	.roomcode-wrapper {
-		margin-top: 2em;
-	}
-
-	#roomcode {
+	#roomID {
 		width: 8.5rem;
 		text-transform: uppercase;
 	}
@@ -144,18 +159,12 @@
 		align-items: center;
 		justify-content: center;
 		text-align: left;
-		gap: 1rem;
+		gap: 3rem;
 		max-width: 90vw;
 		padding: 0.5rem;
 	}
 
-	.button-wrapper {
-		display: flex;
-		gap: 1rem;
-		align-items: center;
-	}
-
-	.button-wrapper > p {
+	p.error {
 		color: red;
 		font-size: 12px;
 	}

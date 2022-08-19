@@ -1,8 +1,10 @@
 <script lang="ts">
-	import type { Player } from '$lib/schema/Player';
-	import { room, client, player } from '$lib/stores';
+	import { room, player } from '$lib/stores';
 
 	let playerList = $room.state.players;
+
+	sessionStorage.setItem('roomID', $room.id);
+	sessionStorage.setItem('sessionID', $room.sessionId);
 
 	$room.onStateChange((state) => {
 		playerList = state.players;

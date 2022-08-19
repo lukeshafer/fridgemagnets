@@ -176,37 +176,52 @@ export class Game extends Room<MyRoomState> {
 			player.isVIP = true;
 		}
 
+		let vip = false;
+		this.state.players.forEach((player) => {
+			if (player.isVIP) vip = true;
+		});
+		if (!vip) player.isVIP = true;
+
 		// place player in the map of players by its sessionId
 		// (client.sessionId is unique per connection!)
 		this.state.players.set(client.sessionId, player);
 	}
 
 	async onLeave(client: Client, consented: boolean) {
+		const player = this.state.players.get(client.sessionId);
+
 		console.log(client.sessionId, 'left!');
-		console.log('consented:', consented);
 
 		// if player is VIP, assign new VIP
-		if (this.state.players.get(client.sessionId).isVIP) {
-			[...this.state.players][1][1].isVIP = true;
+		if (player.isVIP) {
+			for (const [_key, p] of this.state.players) {
+				if (p === player) continue;
+				p.isVIP = true;
+				break;
+			}
+			player.isVIP = false;
 		}
 
-		this.state.players.get(client.sessionId).connected = false;
+		player.connected = false;
 
 		try {
 			if (consented) {
 				throw new Error('consented leave');
 			}
 
-			// allow disconnected client to reconnect into this room until 20 seconds
-			await this.allowReconnection(client, 20);
+			// allow disconnected client to reconnect into this room for X seconds
+			const reconnectTime = this.started ? 60 : 20;
+			await this.allowReconnection(client, reconnectTime);
 
 			// client returned! let's re-activate it.
-			this.state.players.get(client.sessionId).connected = true;
+			player.connected = true;
+			console.log(client.sessionId, 're-joined!');
+			return;
 		} catch (e) {
 			// 20 seconds expired. let's remove the client.
 			this.state.players.delete(client.sessionId);
 		}
-
+		console.log('Deleting player');
 		this.state.players.delete(client.sessionId);
 	}
 
