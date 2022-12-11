@@ -1,6 +1,7 @@
 <script lang="ts">
 	import Piece from '$lib/game-components/Piece.svelte';
-	import { playedPieces, piecesInHand, player, card } from '$lib/stores';
+	import { Piece as PieceClass } from '$lib/schema/Piece';
+	import { playedPieces, piecesInHand, player, card, room } from '$lib/stores';
 
 	let trash: HTMLDivElement;
 	$: trashBounds = trash?.getBoundingClientRect();
@@ -22,6 +23,28 @@
 		}
 
 		return !(a.top > b.bottom || a.right < b.left || a.bottom < b.top || a.left > b.right);
+	};
+
+	const convertCardForServer = () => {
+		const cardBounds = $card.getBoundingClientRect();
+		const pieces: PieceClass[] = [];
+		$playedPieces.forEach(({ word, position }, id) => {
+			let x: number, y: number;
+			if (position) {
+				x = (position.x - cardBounds.x) / cardBounds.width;
+				y = (position.y - cardBounds.y) / cardBounds.height;
+			} else {
+				$playedPieces.delete(id);
+				return;
+			}
+			const piece = new PieceClass();
+			piece.word = word;
+			piece.id = id;
+			piece.x = x;
+			piece.y = y;
+			pieces.push(piece);
+		});
+		return pieces;
 	};
 
 	const handleDragEnd = async (pieceRect: DOMRect, id: number, word: string) => {
@@ -81,6 +104,11 @@
 						await handleDragEnd(pieceRect, id, word);
 						trash_visible = false;
 						trash_hovering = false;
+						
+						// Send the piece info to the server immediately
+						$room.send('updateCard', {
+							pieces: convertCardForServer()
+						});
 					}}
 				/>
 			{/each}

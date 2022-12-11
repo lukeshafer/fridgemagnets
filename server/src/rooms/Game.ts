@@ -1,51 +1,32 @@
 import { Room, Client } from 'colyseus';
 import { MyRoomState, Player, Piece } from './schema/MyRoomState';
 
-import resetPlayers from './roomFunctions/resetPlayers';
+import { resetPlayers } from './functions/resetPlayers';
+import { generateRoomId } from './functions/room';
 
-const LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+const LOBBY_CHANNEL = '$mylobby';
 
 export class Game extends Room<MyRoomState> {
 	// default options
-	maxClients = 8;
-	handSize = 60;
+	options = {
+		maxClients: 8,
+		handSize: 60,
+	};
 	currentPrompt = '';
 	players: IterableIterator<string> | undefined;
 	started = false;
+	safeToAdvance = true;
 
-	// The channel where we register the room IDs.
-	// This can be anything you want, it doesn't have to be `$mylobby`.
-	LOBBY_CHANNEL = '$mylobby';
-
-	// Generate a single 4 capital letter room ID.
-	generateRoomIdSingle(): string {
-		let result = '';
-		for (var i = 0; i < 4; i++) {
-			result += LETTERS.charAt(Math.floor(Math.random() * LETTERS.length));
-		}
-		return result;
-	}
-
-	// 1. Get room IDs already registered with the Presence API.
-	// 2. Generate room IDs until you generate one that is not already used.
-	// 3. Register the new room ID with the Presence API.
-	async generateRoomId(): Promise<string> {
-		const currentIds = await this.presence.smembers(this.LOBBY_CHANNEL);
-		let id;
-		do {
-			id = this.generateRoomIdSingle();
-		} while (currentIds.includes(id));
-
-		await this.presence.sadd(this.LOBBY_CHANNEL, id);
-		return id;
-	}
+	roundCountdown: NodeJS.Timeout;
 
 	async onCreate(options: any) {
-		this.roomId = await this.generateRoomId();
+		const currentIds = await this.presence.smembers(LOBBY_CHANNEL);
+		this.roomId = await generateRoomId(currentIds);
+		await this.presence.sadd(LOBBY_CHANNEL, this.roomId);
 		console.log('Creating room', this.roomId);
 		// Setting options, or leaving defaults
-		this.handSize = options.handSize || this.handSize;
-		this.maxClients = options.maxClients || this.maxClients;
+		this.options.handSize = options.handSize || this.options.handSize;
+		this.options.maxClients = options.maxClients || this.options.maxClients;
 
 		if (options.private) {
 			this.setPrivate(true);
@@ -71,28 +52,32 @@ export class Game extends Room<MyRoomState> {
 			this.state.players.get(client.sessionId).submission.push(piece);
 		});
 
-		this.onMessage(
-			'submitAnswer',
-			(client, message: { status: string; pieces: Piece[] }) => {
-				this.state.players.get(client.sessionId).status = 'finished';
-				this.state.players.get(client.sessionId).submission.clear();
-				message.pieces.forEach((piece) => {
-					const p = new Piece(piece.word, piece.id, piece.x, piece.y);
-					this.state.players.get(client.sessionId).submission.push(p);
-				});
-				const playersArray = Array.from(this.state.players.values());
-				if (playersArray.every(({ status }) => status === 'finished')) {
-					this.startShowcase();
-				}
+		this.onMessage('submitAnswer', (client) => {
+			this.state.players.get(client.sessionId).status = 'finished';
+			const playersArray = Array.from(this.state.players.values());
+			if (playersArray.every(({ status }) => status === 'finished')) {
+				this.startShowcase();
 			}
-		);
+		});
+
+		this.onMessage('updateCard', (client, message: { pieces: Piece[] }) => {
+			this.state.players.get(client.sessionId).submission.clear();
+			message.pieces.forEach((piece) => {
+				const p = new Piece(piece.word, piece.id, piece.x, piece.y);
+				this.state.players.get(client.sessionId).submission.push(p);
+			});
+		});
 
 		this.onMessage('cancel', (client) => {
 			this.state.players.get(client.sessionId).status = 'editing';
 		});
 
 		this.onMessage('advanceShowcase', () => {
-			this.advanceShowcase();
+			if (this.safeToAdvance) {
+				this.advanceShowcase();
+				this.safeToAdvance = false;
+				setTimeout(() => (this.safeToAdvance = true), 2000);
+			}
 		});
 	}
 
@@ -109,10 +94,15 @@ export class Game extends Room<MyRoomState> {
 		console.log('Drawing prompt...');
 		this.state.currentPrompt = this.state.PromptDeck.draw();
 		console.log('Game started!');
+		// this.roundCountdown = setTimeout(this.startShowcase, 1000);
+	}
+
+	test() {
+		console.log('Test method');
 	}
 
 	dealHands() {
-		for (let i = 0; i < this.handSize; i++) {
+		for (let i = 0; i < this.options.handSize; i++) {
 			this.state.players.forEach((player) => {
 				let card = this.state.deck.deal();
 				player.hand.push(card);
@@ -121,6 +111,8 @@ export class Game extends Room<MyRoomState> {
 	}
 
 	startShowcase() {
+		console.log('starting showcase');
+		clearTimeout(this.roundCountdown);
 		this.players = this.state.players.keys();
 		this.state.gamePhase = 'showcase';
 		this.advanceShowcase();
@@ -140,28 +132,11 @@ export class Game extends Room<MyRoomState> {
 
 	newRound() {
 		this.state.gamePhase = 'resetting';
-		this.resetPlayers();
+		resetPlayers(this.state);
 		this.state.showcaseID = '';
 		this.state.currentPrompt = this.state.PromptDeck.draw();
 		this.state.gamePhase = 'playing';
-	}
-
-	// Can be removed soon in favor of external function
-	resetPlayers() {
-		this.state.players.forEach((player) => {
-			for (let i = 0; i < player.submission.length; i++) {
-				let pieceToRemove = player.submission.pop();
-				const pieceIndex = player.hand.findIndex((pieceInHand) => {
-					return pieceInHand.id === pieceToRemove.id;
-				});
-				player.hand.splice(pieceIndex, 1);
-				const card = this.state.deck.deal();
-				if (card) {
-					player.hand.push(card);
-				}
-			}
-			player.status = 'editing';
-		});
+		// this.roundCountdown = setTimeout(this.startShowcase, 90000);
 	}
 
 	onJoin(client: Client, options: any) {
@@ -226,8 +201,8 @@ export class Game extends Room<MyRoomState> {
 	}
 
 	async onDispose() {
-		this.roomId = await this.generateRoomId();
-		this.presence.srem(this.LOBBY_CHANNEL, this.roomId);
+		// this.roomId = await this.generateRoomId();
+		this.presence.srem(LOBBY_CHANNEL, this.roomId);
 		console.log('room', this.roomId, 'disposing...');
 	}
 }

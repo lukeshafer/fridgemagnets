@@ -6,6 +6,7 @@
 	import DoneButton from '$lib/game-components/DoneButton.svelte';
 	import EditButton from '$lib/game-components/EditButton.svelte';
 	import { playedPieces, piecesInHand, player, room } from '$lib/stores';
+	import { onMount } from 'svelte';
 
 	$: currentPrompt = $room.state.currentPrompt.prompt;
 	let hand = $player.hand;
@@ -13,7 +14,23 @@
 	$room.onStateChange((state) => {
 		hand = $player.hand;
 	});
+
+	let timer = 1;
+	const advanceTimer = () => {
+		timer = timer - 1;
+	};
+
+	onMount(() => {
+    const counter = setInterval(advanceTimer, 1000)
+    setTimeout(() => {
+      
+    }, 90000)
+  });
 </script>
+
+{#key timer}
+	<span class="timer">{timer}</span>
+{/key}
 
 <!-- This is the window which contains the game elements -->
 <div class="game-wrapper">
@@ -58,5 +75,9 @@
 		/* position: absolute;
 		left: 1rem;
 		bottom: 1rem; */
+	}
+
+	.timer {
+		font-size: 1.5rem;
 	}
 </style>

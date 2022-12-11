@@ -8,14 +8,18 @@
 
 	$room.onStateChange((state) => {
 		showcaseID = state.showcaseID;
-		const newPlayer = state.players.get($room.sessionId)
-		if (newPlayer)
-			$player = newPlayer
+		const newPlayer = state.players.get($room.sessionId);
+		if (newPlayer) $player = newPlayer;
 	});
-	
+
 	let timeout = false;
-	setTimeout(()=> timeout = true, 10000)
-	
+	setTimeout(() => (timeout = true), 5000);
+
+	const handleClick = () => {
+		timeout = false;
+		$room.send('advanceShowcase');
+		setTimeout(() => (timeout = true), 5000);
+	};
 </script>
 
 <div>
@@ -26,8 +30,8 @@
 			<PromptCard prompt={$room.state.currentPrompt.prompt} />
 		</div>
 		{#key $player.isVIP}
-			{#if $player.isVIP || timeout}<button class="btn" on:click={() => $room.send('advanceShowcase')}> Next</button>
-			{:else}<p>Waiting on host....</p>
+			{#if timeout}<button class="btn" on:click={handleClick}> Next</button>
+			{:else}<p>Waiting...</p>
 			{/if}
 		{/key}
 	{/if}
@@ -42,7 +46,7 @@
 		justify-content: center;
 		gap: 1rem;
 	}
-	
+
 	.cards {
 		flex-direction: row;
 		width: 100%;

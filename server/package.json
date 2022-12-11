@@ -4,6 +4,7 @@
 	"version": "1.0.0",
 	"description": "npm init template for bootstrapping an empty Colyseus project",
 	"main": "lib/index.js",
+	"type": "module",
 	"scripts": {
 		"dev": "export NODE_ENV=development & ts-node-dev --respawn --transpile-only src/index.ts",
 		"loadtest": "colyseus-loadtest loadtest/example.ts --room my_room --numClients 2",
@@ -20,6 +21,8 @@
 	},
 	"homepage": "https://github.com/colyseus/create-colyseus#readme",
 	"devDependencies": {
+		"@typescript-eslint/eslint-plugin": "^5.27.0",
+		"@typescript-eslint/parser": "^5.27.0",
 		"eslint": "^8.21.0",
 		"eslint-config-prettier": "^8.5.0"
 	},

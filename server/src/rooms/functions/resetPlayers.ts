@@ -1,10 +1,11 @@
 import { MyRoomState } from "../schema/MyRoomState"
 
-/**description: Resets player states after a round:
- * 	Removes cards already played
- * 	Deals replacement card
+/**
+ *  Resets player states after a round:
+ * 	- Removes cards already played
+ * 	- Deals replacement card
   */
-export default (state: MyRoomState) => {
+export const resetPlayers = (state: MyRoomState) => {
 	state.players.forEach((player) => {
 		for (let i = 0; i < player.submission.length; i++) {
 			let pieceToRemove = player.submission.pop();
